@@ -678,7 +678,7 @@ const COLORS=["#ff5a1f","#3fb8ff","#7dff3a","#ffd23f","#b06bff","#ff2d55","#2ff3
 const FORMATS=["americano","mexicano","king","teams"];
 const THEMES=["immortal","immortal-blood","immortal-ember","immortal-royal","arcade","neon","club"];
 const isImm=()=>String(S.theme||"").startsWith("immortal");
-function defaults(){return{v:1,phase:"setup",lang:"ru",n:12,players:[],format:"americano",
+function defaults(){return{v:1,phase:"setup",lang:"en",n:12,players:[],format:"americano",
   scoring:{mode:"time",minutes:15,points:24},plan:{total:180,change:2,rounds:11,auto:true},
   mix:{method:"random",order:[],strong:[],rating:[]},theme:"immortal",sound:true,stylize:true,courts:[],
   rounds:[],scores:{},cur:0,finished:false,timer:{running:false,endsAt:0,left:900000},money:{total:0,payer:"",paid:{}}};}
@@ -774,7 +774,7 @@ function remote(data){
   lastMain={};for(const k in data)lastMain[k]=JSON.stringify(data[k]);
   if(dirty||inflight)return;
   const keepScores=S.scores;
-  S=Object.assign(defaults(),clone(data));S.scores=keepScores||{};const LL=localLang();if(LL)S.lang=LL;normalize();
+  S=Object.assign(defaults(),clone(data));S.scores=keepScores||{};S.lang=localLang()||"en";normalize();
   const a=document.activeElement;
   if(a&&a.closest&&a.closest("#dev")&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)){pendingRender=true;return;}
   render();
@@ -1474,7 +1474,7 @@ $("#file").addEventListener("change",async e=>{const f=e.target.files&&e.target.
 document.documentElement.style.setProperty("--gri",`url("${IMG_GRI}")`);
 function fitFrame(){const d=document.getElementById("dev");if(!d)return;if(innerWidth>=760&&innerHeight>=700){const f=Math.min(1,(innerHeight-24)/896,(innerWidth-24)/424);d.style.setProperty("--fs",f.toFixed(3));}else d.style.removeProperty("--fs");}
 addEventListener("resize",fitFrame);fitFrame();
-applyTheme();{const LL=localLang();if(LL)S.lang=LL;}
+applyTheme();S.lang=localLang()||"en";
 try{document.fonts&&document.fonts.ready.then(()=>{if(!BOOT)render();});}catch(e){}
 render();boot();
 })();
