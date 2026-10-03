@@ -964,7 +964,7 @@ function vIntro(){const e=EV(),st=evState(),mem=!AUTHON()||window.PAUTH.isMember
   <div class="by">Padelrex <span class="byw">by</span> <b>Tectiva</b></div></div>`;}
 function myCard(x){const st=x.finished?"done":(x.phase==="play"?"live":"before");return `<button class="mycard" data-act="opent" data-v="${esc(x.code)}"><div class="mc-top"><b>${esc(x.title||at("untitled"))}</b><span class="mc-role">${x.role==="org"?at("role_org"):at("role_pl")}</span></div><div class="mc-sub">${st==="live"?"🔴 LIVE · ":""}${x.date?fmtDate(x.date):""}${x.start?" · "+esc(x.start):""}${x.club?" · "+esc(x.club):""}</div></button>`;}
 function vHome(){const m=AUTHON()&&window.PAUTH.isMember();
-  if(!m){return `<div class="home"><div class="hero"><div class="hero-mark">${typeof emblem==="function"?emblem(104):""}</div><h2>${at("about_t")}</h2><i class="hl"></i><p>${at("about_1")}</p><i class="hl"></i><p>${at("about_2")}</p><i class="hl"></i><p>${at("about_3")}</p></div>
+  if(!m){return `<div class="home"><div class="hero"><div class="hero-mark">${typeof emblem==="function"?emblem(104):""}</div><i class="hl"></i><h2>${at("about_t")}</h2><i class="hl"></i><p>${at("about_1")}</p><i class="hl"></i><p>${at("about_2")}</p><i class="hl"></i><p>${at("about_3")}</p><i class="hl"></i></div>
     <div class="hbtns"><button class="btn pri big" data-act="acct">${at("go_in")}</button><button class="btn" data-act="homereg">${at("register")}</button>${installBox()}</div><div class="by">Padelrex <span class="byw">by</span> <b>Tectiva</b></div></div>`;}
   const today=new Date().toISOString().slice(0,10);
   const live=MY.filter(x=>!x.finished&&x.phase==="play");
