@@ -551,7 +551,7 @@ function defaults(){return{v:1,phase:"setup",lang:"ru",n:12,players:[],format:"a
   rounds:[],scores:{},cur:0,finished:false,timer:{running:false,endsAt:0,left:900000},money:{total:0,payer:"",paid:{}}};}
 let S=defaults(),PH={},db=null,mainRef=null,LOCAL=true,RO=false,BOOT=true;
 const CID=Math.random().toString(36).slice(2,10);let lastW=0;
-let REG={},PAID={},SCMETA={},UID=null,USER=null,UN={},lastMain={},regFor=null,regDraft=null;
+let AU={},REG={},PAID={},SCMETA={},UID=null,USER=null,UN={},lastMain={},regFor=null,regDraft=null;
 let dirty=false,inflight=false,saveT=null,rev=0,pendingRender=false;
 let step=0,tab="round",sel=null,confirmBox=null,lastCur=null,gongKey="",photoFor=null,pasteText="";
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -625,12 +625,12 @@ async function dbWrite(col,id,data){
   try{if(data===null)await db.collection(col).doc(id).delete();else await db.collection(col).doc(id).set(data);return true;}
   catch(e){if(e&&e.code==="invalid_argument"){RO=true;toast(t("ro_now"));render();}else toast(t("save_err"));return false;}
 }
-function writeScore(key,v){
-  S.scores[key]=v;SCMETA[key]={by:UID,at:Date.now()};
-  return dbWrite("scores",key,{a:v[0],b:v[1],by:UID||null,at:Date.now()});
+function writeScore(key,v,au){
+  S.scores[key]=v;SCMETA[key]={by:UID,at:Date.now()};AU[key]=au==null?null:au;
+  return dbWrite("scores",key,{a:v[0],b:v[1],au:au==null?null:au,by:UID||null,at:Date.now()});
 }
 async function clearScores(){
-  const keys=Object.keys(S.scores);S.scores={};SCMETA={};
+  const keys=Object.keys(S.scores);S.scores={};SCMETA={};AU={};
   if(LOCAL){ls.set("pfn_state",JSON.stringify(S));return;}
   for(const k of keys){try{await db.collection("scores").doc(k).delete();}catch(e){}}
 }
@@ -650,8 +650,8 @@ async function boot(){
   if(dbx){
     db=dbx;LOCAL=false;mainRef=db.doc("t/main");
     try{const u=await window.claude.use("user");if(u){USER=u;const w=await u.can("data.write");if(w===false)RO=true;try{UID=await u.id();}catch(e){}}}catch(e){}
-    db.collection("scores").onSnapshot(qs=>{const m={},meta={};qs.docs.forEach(d=>{const x=d.data();if(!x)return;m[d.id]=[x.a==null?null:x.a,x.b==null?null:x.b];meta[d.id]={by:x.by||null,at:x.at||0};});
-      S.scores=m;SCMETA=meta;resolveNames(Object.values(meta).map(x=>x.by).filter(Boolean));if(!BOOT)softRender();},()=>{});
+    db.collection("scores").onSnapshot(qs=>{const m={},meta={},au={};qs.docs.forEach(d=>{const x=d.data();if(!x)return;m[d.id]=[x.a==null?null:x.a,x.b==null?null:x.b];meta[d.id]={by:x.by||null,at:x.at||0};au[d.id]=x.au==null?null:x.au;});
+      S.scores=m;SCMETA=meta;AU=au;resolveNames(Object.values(meta).map(x=>x.by).filter(Boolean));if(!BOOT)softRender();},()=>{});
     db.collection("paid").onSnapshot(qs=>{const m={};qs.docs.forEach(d=>{const x=d.data();if(x&&x.v)m[d.id]=true;});PAID=m;if(!BOOT)softRender();},()=>{});
     db.collection("reg").onSnapshot(qs=>{const m={};qs.docs.forEach(d=>{const x=d.data();if(x)m[d.id]=x;});REG=m;if(!BOOT)softRender();},()=>{});
     let first=true;
@@ -798,6 +798,7 @@ function cdHtml(){const E=EVENT,n=Date.now();
   if(n>=E.tEnd)return `<div class="cdl">${it("cd_end")}</div>`;
   if(n>=E.tStart)return `<div class="cdr up"><span>${it("cd_on")}</span><b>${fmtD(n-E.tStart)}</b></div>`;
   return (n<E.tMeet?`<div class="cdr"><span>${it("cd_meet")}</span><b>${fmtD(E.tMeet-n)}</b></div>`:"")+`<div class="cdr main${E.tStart-n<3600000?" red":""}"><span>${it("cd_start")}</span><b>${fmtD(E.tStart-n)}</b></div>`;}
+addEventListener("resize",()=>{if(INTRO)render();});
 setInterval(()=>{const el=document.getElementById("cdown");if(el)el.innerHTML=cdHtml();},1000);
 function swords(){return `<svg class="sw" viewBox="0 0 32 32" aria-hidden="true"><g fill="#1a0f05"><g transform="rotate(42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g><g transform="rotate(-42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g></g></svg>`;}
 function vIntro(){const E=EVENT;
@@ -815,7 +816,7 @@ function render(){
   if(BOOT){content.innerHTML=`<div class="loading">LOADING…</div>`;$("#top").innerHTML=top();$("#bottom").innerHTML="";return;}
   const keep=content.scrollTop;
   $("#top").innerHTML=top();
-  if(INTRO){content.innerHTML=vIntro();{const cs=getComputedStyle(content),el=content.querySelector(".intro");if(el)el.style.minHeight=(content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))+"px";}$("#bottom").innerHTML=`<div class="foot"><button class="btn pri big gobtn" data-act="intro">${swords()}<span>${it("go")}</span>${swords()}</button></div>`;content.scrollTop=0;renderLayer();return;}
+  if(INTRO){content.innerHTML=vIntro();{const cs=getComputedStyle(content),el=content.querySelector(".intro");if(el){el.style.zoom="";el.style.minHeight=(content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))+"px";if(content.scrollHeight>content.clientHeight+1){el.style.minHeight="";const k=Math.max(.6,(content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))/el.scrollHeight);el.style.zoom=k;el.style.minHeight=((content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))/k)+"px";}}}$("#bottom").innerHTML=`<div class="foot"><button class="btn pri big gobtn" data-act="intro">${swords()}<span>${it("go")}</span>${swords()}</button></div>`;content.scrollTop=0;renderLayer();return;}
   if(S.phase==="play"&&S.rounds.length){
     if(lastCur!==null&&S.cur!==lastCur){lastCur=S.cur;showOverlay(false);}lastCur=S.cur;
     content.innerHTML=({round:vRound,table:vTable,fighters:vFighters,money:vMoney,more:vMore}[tab]||vRound)();
@@ -1041,8 +1042,14 @@ function goNext(){
 function setScore(c,side,val){
   const r=S.cur,key=r+"_"+c;const v=(S.scores[key]||[null,null]).slice();
   v[side]=val==null||isNaN(val)?null:Math.max(0,Math.round(val));
-  if(S.scoring.mode==="points"&&v[side]!=null){v[side]=Math.min(v[side],S.scoring.points);v[1-side]=S.scoring.points-v[side];}
-  writeScore(key,v);
+  let au=AU[key]==null?null:AU[key];
+  if(S.scoring.mode==="points"&&v[side]!=null){
+    v[side]=Math.min(v[side],S.scoring.points);
+    const o=1-side;
+    if(v[o]==null||au===o){v[o]=S.scoring.points-v[side];au=o;}   /* other side empty or auto-filled -> fill it */
+    else if(au===side)au=null;                                       /* manual fix of the auto side -> keep both */
+  }else if(v[side]==null)au=null;
+  writeScore(key,v,au);
 }
 function autoNext(){if(S.phase==="play")return;const at=step;setTimeout(()=>{if(step===at&&step<STEPS.length-1){step++;ls.set("pfn_step",String(step));render();$("#content").scrollTop=0;}},320);}
 function act(a,d,el){
