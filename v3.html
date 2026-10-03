@@ -480,6 +480,8 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
 }
 .by{text-transform:none!important;letter-spacing:.03em!important;font-size:13px!important}.by .byw{font-weight:400;opacity:.75}
 .ioshelp ol{list-style:none;padding:0;margin:0 0 10px;display:grid;gap:12px}.ioshelp li{display:flex;gap:12px;align-items:center;font-size:15.5px;line-height:1.35}.ioshelp .ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:1px solid rgba(230,194,90,.6);color:#c99a2e;font-size:22px;font-weight:700}
+.hero .hl{display:block;width:33%;height:1px;margin:6px auto;background:linear-gradient(90deg,transparent,rgba(230,194,90,.9),transparent)}
+.btn.big{padding-top:5px}
 </style>
 
 <div class="stage"><div class="device" id="dev"><canvas id="fx" aria-hidden="true"></canvas><div class="crest" aria-hidden="true"></div><div class="island"></div>
@@ -962,7 +964,7 @@ function vIntro(){const e=EV(),st=evState(),mem=!AUTHON()||window.PAUTH.isMember
   <div class="by">Padelrex <span class="byw">by</span> <b>Tectiva</b></div></div>`;}
 function myCard(x){const st=x.finished?"done":(x.phase==="play"?"live":"before");return `<button class="mycard" data-act="opent" data-v="${esc(x.code)}"><div class="mc-top"><b>${esc(x.title||at("untitled"))}</b><span class="mc-role">${x.role==="org"?at("role_org"):at("role_pl")}</span></div><div class="mc-sub">${st==="live"?"🔴 LIVE · ":""}${x.date?fmtDate(x.date):""}${x.start?" · "+esc(x.start):""}${x.club?" · "+esc(x.club):""}</div></button>`;}
 function vHome(){const m=AUTHON()&&window.PAUTH.isMember();
-  if(!m){return `<div class="home"><div class="hero"><div class="hero-mark">${typeof emblem==="function"?emblem(104):""}</div><h2>${at("about_t")}</h2><p>${at("about_1")}</p><p>${at("about_2")}</p><p>${at("about_3")}</p></div>
+  if(!m){return `<div class="home"><div class="hero"><div class="hero-mark">${typeof emblem==="function"?emblem(104):""}</div><h2>${at("about_t")}</h2><i class="hl"></i><p>${at("about_1")}</p><i class="hl"></i><p>${at("about_2")}</p><i class="hl"></i><p>${at("about_3")}</p></div>
     <div class="hbtns"><button class="btn pri big" data-act="acct">${at("go_in")}</button><button class="btn" data-act="homereg">${at("register")}</button>${installBox()}</div><div class="by">Padelrex <span class="byw">by</span> <b>Tectiva</b></div></div>`;}
   const today=new Date().toISOString().slice(0,10);
   const live=MY.filter(x=>!x.finished&&x.phase==="play");
