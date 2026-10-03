@@ -185,18 +185,23 @@ h1{font-family:var(--f-disp);font-weight:400;font-size:26px;line-height:1.08;mar
 .gobtn{min-height:58px!important;gap:14px!important}
 .gobtn span{font-family:var(--f-disp);font-weight:400;font-size:26px;letter-spacing:.22em;margin-right:-.22em;color:#1a0f05;text-shadow:0 1px 0 rgba(255,250,220,.75),0 -1px 0 rgba(90,50,0,.35)}
 .gobtn .sw{width:40px;height:40px;flex:none;filter:drop-shadow(0 1px 0 rgba(255,250,220,.7))}
+.intro{display:flex;flex-direction:column;min-height:100%}
+.intro .lbl.push{margin-top:auto!important}
 .intro h2{font-family:var(--f-disp);font-size:26px;margin:4px 0 2px;letter-spacing:.02em}
-.intro .ev{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.intro .ev{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:10px}
+.intro .lbl{margin:10px 0 6px}
+.intro .when{border-top:1px solid var(--line);margin-top:6px;padding-top:8px;font-size:15px;font-weight:700;text-align:center}
 .intro .big{font-size:20px;font-weight:700;margin:2px 0}
-.intro .lnks{display:flex;gap:10px;margin-top:12px}
+.intro .lnks{display:flex;gap:10px;margin-top:10px}
 .intro .lnks a{flex:1;white-space:nowrap;font-size:13px;padding:0 8px;text-align:center;text-decoration:none;min-height:44px;display:flex;align-items:center;justify-content:center}
-.intro .crt{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:17px}
+.intro .crt{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:17px}
 .intro .crt:first-of-type{border-top:0}
 .intro .crt b{font-family:var(--f-disp);font-weight:400;min-width:48px}
 .intro .crt span{flex:1;font-weight:700}
 .intro .crt code{font-size:17px;font-weight:700;color:var(--gold,#e3a83c);letter-spacing:.06em}
-.intro .by{text-align:center;color:var(--mute);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:16px 0 4px}
+.intro .by{text-align:center;color:var(--mute);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:8px 0 0}
 .intro .by b{color:inherit;font-weight:800}
+@media (max-height:700px){.intro .ev{padding:7px 12px;margin-bottom:8px}.intro .lbl{margin:6px 0 4px}.intro .crt{padding:5px 0}.intro .cdr.main b{font-size:26px}.intro .cdr{padding:2px 0}.intro .by{margin-top:4px}.intro .lnks a{min-height:40px}}
 .hint{color:var(--mute);font-size:15px;margin:0 0 14px}
 .lbl{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:16px 0 8px}
 
@@ -796,11 +801,10 @@ function cdHtml(){const E=EVENT,n=Date.now();
 setInterval(()=>{const el=document.getElementById("cdown");if(el)el.innerHTML=cdHtml();},1000);
 function swords(){return `<svg class="sw" viewBox="0 0 32 32" aria-hidden="true"><g fill="#1a0f05"><g transform="rotate(42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g><g transform="rotate(-42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g></g></svg>`;}
 function vIntro(){const E=EVENT;
-  return `<div class="intro"><div class="lbl">${it("ttl")}</div><h2>IMMORTAL KOMBAT</h2>
-  <div class="ev cd" id="cdown">${cdHtml()}</div>
-  <div class="lbl">${it("when")}</div><div class="ev"><div class="big">${E.date} · ${E.time}</div><div>${it("meet")} ${E.meet}</div></div>
+  return `<div class="intro">
+  <div class="ev cd"><div id="cdown">${cdHtml()}</div><div class="when">${E.date} · ${E.time} · ${it("meet")} ${E.meet}</div></div>
   <div class="lbl">${it("courts")}</div><div class="ev">${E.courts.map(c=>`<div class="crt"><b>${c[0]}</b><span>${esc(c[1])}</span><code>${it("code")} ${c[2]}</code></div>`).join("")}</div>
-  <div class="lbl">${it("place")}</div><div class="ev"><div class="big">${esc(E.club)}</div><div>${esc(E.addr)}</div>
+  <div class="lbl push">${it("place")}</div><div class="ev"><div class="big">${esc(E.club)}</div><div>${esc(E.addr)}</div>
    <div class="lnks"><a class="btn" href="${E.gmaps}" target="_blank" rel="noopener">Google Maps</a><a class="btn" href="${E.waze}" target="_blank" rel="noopener">Waze</a></div></div>
   <div class="by">Padelio <b>by Tectiva</b></div></div>`;}
 function render(){
@@ -811,7 +815,7 @@ function render(){
   if(BOOT){content.innerHTML=`<div class="loading">LOADING…</div>`;$("#top").innerHTML=top();$("#bottom").innerHTML="";return;}
   const keep=content.scrollTop;
   $("#top").innerHTML=top();
-  if(INTRO){content.innerHTML=vIntro();$("#bottom").innerHTML=`<div class="foot"><button class="btn pri big gobtn" data-act="intro">${swords()}<span>${it("go")}</span>${swords()}</button></div>`;content.scrollTop=0;renderLayer();return;}
+  if(INTRO){content.innerHTML=vIntro();{const cs=getComputedStyle(content),el=content.querySelector(".intro");if(el)el.style.minHeight=(content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))+"px";}$("#bottom").innerHTML=`<div class="foot"><button class="btn pri big gobtn" data-act="intro">${swords()}<span>${it("go")}</span>${swords()}</button></div>`;content.scrollTop=0;renderLayer();return;}
   if(S.phase==="play"&&S.rounds.length){
     if(lastCur!==null&&S.cur!==lastCur){lastCur=S.cur;showOverlay(false);}lastCur=S.cur;
     content.innerHTML=({round:vRound,table:vTable,fighters:vFighters,money:vMoney,more:vMore}[tab]||vRound)();
@@ -836,7 +840,7 @@ function wordmark(){return `<svg class="wm" viewBox="0 0 250 64" role="img" aria
   <text x="68" y="55" font-family="Cinzel,Georgia,serif" font-weight="900" font-size="25" letter-spacing="4.2" fill="url(#wmG)" stroke="#5a0a0a" stroke-width="1" paint-order="stroke">KOMBAT</text></svg>`;}
 function top(){
   const b=LOCAL&&!BOOT?`<span class="badge" title="${esc(t("local_note"))}">${t("local")}</span>`:RO?`<span class="badge">${t("ro")}</span>`:"";
-  const logo=isImm()?`<div class="logo" aria-label="Immortal Kombat">${wordmark()}</div>`:`<div class="logo"><b>Padel Fight Night</b><span>${t("sub")}</span></div>`;
+  const logo=isImm()?`<div class="logo" data-act="home" style="cursor:pointer" aria-label="Immortal Kombat">${wordmark()}</div>`:`<div class="logo"><b>Padel Fight Night</b><span>${t("sub")}</span></div>`;
   return `${logo}<div class="sp"></div>${b}<div class="langs">${["ru","en","et"].map(l=>`<button data-act="lang" data-v="${l}" class="${S.lang===l?"on":""}">${l.toUpperCase()}</button>`).join("")}</div>`;
 }
 const dis=()=>RO?"disabled":"";
@@ -1098,6 +1102,7 @@ function act(a,d,el){
       const o=S.mix.order,i=o.indexOf(sel),j=o.indexOf(d.id);if(i>=0&&j>=0)[o[i],o[j]]=[o[j],o[i]];sel=null;break;}
     case "theme":S.theme=d.v;if(S.phase!=="play")autoNext();break;
     case "sound":S.sound=!S.sound;if(S.sound)gong();break;
+    case "home":INTRO=true;render();return;
     case "intro":INTRO=false;render();$("#content").scrollTop=0;return;
     case "fight":{const has=S.rounds.length&&Object.keys(S.scores).length;if(has){ask(t("rebuild"),startTournament);return;}startTournament();return;}
     case "lrswap":{const mt=S.rounds[S.cur]&&S.rounds[S.cur].m[+d.c];if(!mt)return;const k=+d.s?"b":"a";mt[k]=[mt[k][1],mt[k][0]];break;}
