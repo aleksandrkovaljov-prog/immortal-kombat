@@ -466,6 +466,18 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
 .empty{padding:18px;border:1px dashed var(--line);color:var(--mute);text-align:center}
 @media (pointer:coarse){input,select,textarea{font-size:16px!important}.score input{font-size:32px!important}}
 #dbg{position:fixed;left:4px;right:4px;bottom:4px;max-height:26vh;overflow:hidden;z-index:99999;background:rgba(0,0,0,.72);color:#9f9;font:11px/1.35 ui-monospace,monospace;padding:6px 8px;border:1px solid #3a3;border-radius:8px;white-space:pre-wrap;pointer-events:none}
+.home .btn.big{flex:none}
+.home .lbl{color:var(--acc,#e6c25a);opacity:1;margin-top:8px}
+.profrow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(230,194,90,.45);background:rgba(230,194,90,.07);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.profrow .pav{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center;border:1px solid rgba(230,194,90,.6);color:#e6c25a}
+.profrow .pav img{width:100%;height:100%;object-fit:cover}.profrow .pav svg{width:26px;height:26px}
+.profrow .pt{flex:1;display:flex;flex-direction:column;min-width:0}.profrow .pt small{opacity:.75;font-size:12.5px}
+.profrow .chev{font-size:24px;color:#e6c25a}
+.spambox{margin:10px 0;padding:10px 12px;border-radius:12px;border:1px solid rgba(230,194,90,.6);background:rgba(230,194,90,.10);font-size:14.5px;line-height:1.35}
+@media (max-width:759px),(max-height:699px){
+  .stage{position:fixed;inset:0;height:auto}
+  .top{padding-top:calc(12px + env(safe-area-inset-top,0px))}
+}
 </style>
 
 <div class="stage"><div class="device" id="dev"><canvas id="fx" aria-hidden="true"></canvas><div class="crest" aria-hidden="true"></div><div class="island"></div>
@@ -954,8 +966,10 @@ function vHome(){const m=AUTHON()&&window.PAUTH.isMember();
   const live=MY.filter(x=>!x.finished&&x.phase==="play");
   const up=MY.filter(x=>!x.finished&&x.phase!=="play"&&(!x.date||x.date>=today)).sort((a,b)=>(a.date||"9").localeCompare(b.date||"9"));
   const hist=MY.filter(x=>x.finished||(x.phase!=="play"&&x.date&&x.date<today)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-  return `<div class="home">${live.length?`<div class="lbl">${at("live_now")}</div>${live.map(myCard).join("")}`:""}
-  <div class="lbl">${at("upcoming")}</div>${up.length?up.map(myCard).join(""):`<p class="hint">${at("none_up")}</p>`}
+  const pn=(PROF&&(PROF.nick||PROF.name))||((ME()||{}).displayName)||"";
+  const prow=`<button class="profrow" data-act="acct"><span class="pav">${PROF&&PROF.photo?`<img src="${esc(PROF.photo)}" alt="">`:USERICON}</span><span class="pt"><b>${esc(pn||at("prof_fill"))}</b><small>${at("prof_open")}</small></span><span class="chev">›</span></button>`;
+  return `<div class="home">${prow}${live.length?`<div class="lbl">${at("live_now")}</div>${live.map(myCard).join("")}`:""}
+  <div class="lbl">${at("upcoming")}</div>${up.length?up.map(myCard).join(""):`<p class="hint">${at("none_up")} ${at("join_hint")}</p>`}
   <button class="btn pri big" data-act="newtour" style="width:100%;margin:6px 0 4px">${at("create")}</button>
   <div class="lbl">${at("history")}</div>${hist.length?hist.map(myCard).join(""):`<p class="hint">${at("none_hist")}</p>`}
   ${installBox()}<div class="by">Padelrex <b>by Tectiva</b></div></div>`;}
@@ -968,12 +982,12 @@ const AT={
 ru:{login:"Вход",register:"Регистрация",email:"Email",pass:"Пароль",name:"Имя",nick:"Прозвище",hint:"Подсказка к паролю (необязательно)",hint_note:"Подсказка хранится только на этом телефоне.",
 remember:"Запомнить меня",go_in:"Войти",go_reg:"Создать аккаунт",forgot:"Не помню пароль",google:"Войти через Google",or:"или",have:"Уже есть аккаунт? Войти",noacc:"Нет аккаунта? Регистрация",
 need:"Войди, чтобы ставить счёт и менять турнир. Смотреть можно без входа.",verify_t:"Подтверди email",verify_n:"Мы отправили письмо на {e}. Открой его и нажми ссылку, потом вернись сюда.",
-spam:"Нет письма? Проверь папку «Спам».",iverified:"Я подтвердил",resend:"Отправить письмо ещё раз",change:"Другой email",sent:"Письмо отправлено.",notyet:"Пока не подтверждено. Нажми ссылку в письме.",
+spam:"Письмо часто попадает в «Спам». Открой папку «Спам», нажми «Не спам» и перейди по ссылке в письме.",iverified:"Я подтвердил",resend:"Отправить письмо ещё раз",change:"Другой email",sent:"Письмо отправлено.",notyet:"Пока не подтверждено. Нажми ссылку в письме.",
 forgot_t:"Восстановление пароля",reset_btn:"Прислать ссылку для сброса",reset_ok:"Ссылка для сброса отправлена на {e}.",show_hint:"Показать подсказку",no_hint:"Подсказки на этом телефоне нет. Сбрось пароль по ссылке.",your_hint:"Подсказка: {h}",
 back:"Назад",profile:"Профиль",photo:"Фото",save:"Сохранить",saved:"Сохранено",out:"Выйти",verified:"email подтверждён",unverified:"email не подтверждён",
 copy:"⧉ Копировать ссылку",copied:"Ссылка скопирована",
 about_t:"Турниры по паделу — в одном приложении",install:"Установить приложение",install_ios:"Установить на iPhone: «Поделиться» → «На экран „Домой“»",about_1:"Собери компанию и проведи турнир: Americano, Mexicano, King of the Court или постоянные пары.",about_2:"Жеребьёвка, таймер, счёт и таблица — вживую у всех на телефонах.",about_3:"Свой профиль, аватарка бойца и история твоих турниров.",
-live_now:"Идёт сейчас",upcoming:"Мои ближайшие турниры",history:"История моих турниров",create:"＋ Создать турнир",none_up:"Ближайших турниров пока нет.",none_hist:"Здесь появятся турниры, в которых ты играл.",
+live_now:"Идёт сейчас",upcoming:"Мои ближайшие турниры",history:"История моих турниров",create:"＋ Создать турнир",none_up:"Ближайших турниров пока нет.",join_hint:"Чтобы попасть в турнир, организатор пришлёт тебе ссылку — или создай свой.",prof_fill:"Заполни профиль",prof_open:"Мой профиль: имя, прозвище, аватарка",none_hist:"Здесь появятся турниры, в которых ты играл.",
 role_org:"Организатор",role_pl:"Игрок",untitled:"Турнир без названия",not_found:"Турнир не найден. Проверь ссылку.",my_t:"← Мои турниры",org_only:"Это может только организатор.",
 ev_step:"Событие",ev_title:"Название турнира",ev_date:"Дата",ev_start:"Начало",ev_end:"Конец",ev_meet:"Сбор",ev_club:"Клуб",ev_addr:"Адрес",ev_courts:"Корты",ev_num:"№",ev_cname:"Название",ev_code:"Код входа",ev_h:"Это увидят игроки на странице турнира. Коды кортов видят только вошедшие.",
 st_live:"LIVE · раунд {r} из {n}",st_done:"Турнир завершён",winner:"Победитель",results:"Итоги",players_n:"Записано: {a} из {b}",codes_hidden:"Коды кортов видны после входа.",
@@ -982,12 +996,12 @@ e_inuse:"Этот email уже зарегистрирован — войди.",e
 en:{login:"Sign in",register:"Sign up",email:"Email",pass:"Password",name:"Name",nick:"Nickname",hint:"Password hint (optional)",hint_note:"The hint stays on this phone only.",
 remember:"Remember me",go_in:"Sign in",go_reg:"Create account",forgot:"Forgot password",google:"Sign in with Google",or:"or",have:"Have an account? Sign in",noacc:"No account? Sign up",
 need:"Sign in to enter scores and change the tournament. Watching works without signing in.",verify_t:"Confirm your email",verify_n:"We sent a message to {e}. Open it, tap the link, then come back here.",
-spam:"No email? Check your Spam folder.",iverified:"I've confirmed",resend:"Send again",change:"Use another email",sent:"Email sent.",notyet:"Not confirmed yet. Tap the link in the email.",
+spam:"The email often lands in Spam. Open the Spam folder, tap “Not spam” and follow the link in the email.",iverified:"I've confirmed",resend:"Send again",change:"Use another email",sent:"Email sent.",notyet:"Not confirmed yet. Tap the link in the email.",
 forgot_t:"Reset password",reset_btn:"Send reset link",reset_ok:"A reset link was sent to {e}.",show_hint:"Show hint",no_hint:"No hint on this phone. Reset the password by link.",your_hint:"Hint: {h}",
 back:"Back",profile:"Profile",photo:"Photo",save:"Save",saved:"Saved",out:"Sign out",verified:"email confirmed",unverified:"email not confirmed",
 copy:"⧉ Copy link",copied:"Link copied",
 about_t:"Padel tournaments in one app",install:"Install the app",install_ios:"Install on iPhone: Share → Add to Home Screen",about_1:"Gather your crew and run a tournament: Americano, Mexicano, King of the Court or fixed pairs.",about_2:"Draw, timer, score and standings — live on everyone's phone.",about_3:"Your profile, fighter avatar and the history of your tournaments.",
-live_now:"Live now",upcoming:"My upcoming tournaments",history:"My tournament history",create:"＋ Create tournament",none_up:"No upcoming tournaments yet.",none_hist:"Tournaments you played will appear here.",
+live_now:"Live now",upcoming:"My upcoming tournaments",history:"My tournament history",create:"＋ Create tournament",none_up:"No upcoming tournaments yet.",join_hint:"To join a tournament, the organizer will send you a link — or create your own.",prof_fill:"Fill in your profile",prof_open:"My profile: name, nickname, avatar",none_hist:"Tournaments you played will appear here.",
 role_org:"Organizer",role_pl:"Player",untitled:"Untitled tournament",not_found:"Tournament not found. Check the link.",my_t:"← My tournaments",org_only:"Only the organizer can do this.",
 ev_step:"Event",ev_title:"Tournament name",ev_date:"Date",ev_start:"Start",ev_end:"End",ev_meet:"Meet",ev_club:"Club",ev_addr:"Address",ev_courts:"Courts",ev_num:"No.",ev_cname:"Name",ev_code:"Door code",ev_h:"Players see this on the tournament page. Court codes are shown only to signed-in players.",
 st_live:"LIVE · round {r} of {n}",st_done:"Tournament finished",winner:"Winner",results:"Results",players_n:"Signed up: {a} of {b}",codes_hidden:"Court codes are visible after signing in.",
@@ -996,12 +1010,12 @@ e_inuse:"This email is already registered — sign in.",e_timeout:"Failed: {s} �
 et:{login:"Sisene",register:"Registreeru",email:"E-post",pass:"Parool",name:"Nimi",nick:"Hüüdnimi",hint:"Parooli vihje (valikuline)",hint_note:"Vihje jääb ainult sellesse telefoni.",
 remember:"Jäta mind meelde",go_in:"Sisene",go_reg:"Loo konto",forgot:"Unustasin parooli",google:"Sisene Google'iga",or:"või",have:"Konto on olemas? Sisene",noacc:"Kontot pole? Registreeru",
 need:"Sisene, et tulemusi sisestada ja turniiri muuta. Vaadata saab ka sisenemata.",verify_t:"Kinnita e-post",verify_n:"Saatsime kirja aadressile {e}. Ava see, vajuta linki ja tule tagasi.",
-spam:"Kirja pole? Vaata rämpsposti.",iverified:"Kinnitasin",resend:"Saada uuesti",change:"Teine e-post",sent:"Kiri saadetud.",notyet:"Pole veel kinnitatud. Vajuta kirjas olevat linki.",
+spam:"Kiri satub sageli rämpsposti. Ava rämpspost, vajuta „Pole rämps“ ja ava kirjas olev link.",iverified:"Kinnitasin",resend:"Saada uuesti",change:"Teine e-post",sent:"Kiri saadetud.",notyet:"Pole veel kinnitatud. Vajuta kirjas olevat linki.",
 forgot_t:"Parooli taastamine",reset_btn:"Saada taastamislink",reset_ok:"Taastamislink saadeti aadressile {e}.",show_hint:"Näita vihjet",no_hint:"Selles telefonis vihjet pole. Taasta parool lingiga.",your_hint:"Vihje: {h}",
 back:"Tagasi",profile:"Profiil",photo:"Foto",save:"Salvesta",saved:"Salvestatud",out:"Logi välja",verified:"e-post kinnitatud",unverified:"e-post kinnitamata",
 copy:"⧉ Kopeeri link",copied:"Link kopeeritud",
 about_t:"Padeliturniirid ühes rakenduses",install:"Paigalda rakendus",install_ios:"Paigalda iPhone'i: Jaga → Lisa avakuvale",about_1:"Kogu seltskond kokku ja korralda turniir: Americano, Mexicano, King of the Court või püsipaarid.",about_2:"Loosimine, taimer, skoor ja tabel — reaalajas kõigi telefonis.",about_3:"Oma profiil, võitleja avatar ja sinu turniiride ajalugu.",
-live_now:"Käib praegu",upcoming:"Minu tulevased turniirid",history:"Minu turniiride ajalugu",create:"＋ Loo turniir",none_up:"Tulevasi turniire veel pole.",none_hist:"Siia ilmuvad turniirid, kus mängisid.",
+live_now:"Käib praegu",upcoming:"Minu tulevased turniirid",history:"Minu turniiride ajalugu",create:"＋ Loo turniir",none_up:"Tulevasi turniire veel pole.",join_hint:"Turniiriga liitumiseks saadab korraldaja sulle lingi — või loo oma.",prof_fill:"Täida profiil",prof_open:"Minu profiil: nimi, hüüdnimi, avatar",none_hist:"Siia ilmuvad turniirid, kus mängisid.",
 role_org:"Korraldaja",role_pl:"Mängija",untitled:"Nimetu turniir",not_found:"Turniiri ei leitud. Kontrolli linki.",my_t:"← Minu turniirid",org_only:"Seda saab teha ainult korraldaja.",
 ev_step:"Sündmus",ev_title:"Turniiri nimi",ev_date:"Kuupäev",ev_start:"Algus",ev_end:"Lõpp",ev_meet:"Kogunemine",ev_club:"Klubi",ev_addr:"Aadress",ev_courts:"Väljakud",ev_num:"Nr",ev_cname:"Nimi",ev_code:"Uksekood",ev_h:"Mängijad näevad seda turniiri lehel. Väljakute koode näevad ainult sisse loginud.",
 st_live:"LIVE · voor {r}/{n}",st_done:"Turniir on lõppenud",winner:"Võitja",results:"Tulemused",players_n:"Registreerunud: {a}/{b}",codes_hidden:"Väljakute koodid on nähtavad pärast sisselogimist.",
@@ -1043,7 +1057,7 @@ function authSheet(){const v=AUTHV,u=ME();let b="";
   else if(v.mode==="register"){b=head(at("register"))+`<form class="au" data-sub="aureg" autocomplete="on">${msg}<div class="lbl">${at("name")}</div><input type="text" id="au_name" name="name" autocomplete="name"><div class="lbl">${at("email")}</div><input type="email" id="au_email" name="email" autocomplete="username" autocapitalize="off" spellcheck="false" value="${esc(v.email)}"><div class="lbl">${at("pass")}</div>${pw("au_pass","new-password")}
     <div class="lbl">${at("hint")}</div><input type="text" id="au_hint" name="hint" autocomplete="off" data-1p-ignore><p class="note">${at("hint_note")}</p>${rem}
     <button class="btn pri big" type="submit" ${AUTHBUSY?"disabled":""}>${AUTHBUSY?at("wait"):at("go_reg")}</button>${gbtn}<button type="button" class="btn" data-act="aumode" data-v="login">${at("have")}</button></form>`;}
-  else if(v.mode==="verify"){const e=(u&&u.email)||v.email;b=head(at("verify_t"))+`<div class="au">${msg}<p>${esc(at("verify_n",{e:e}))}</p><p class="note">${at("spam")}</p>
+  else if(v.mode==="verify"){const e=(u&&u.email)||v.email;b=head(at("verify_t"))+`<div class="au">${msg}<p>${esc(at("verify_n",{e:e}))}</p><div class="spambox">📩 ${at("spam")}</div>
     <button class="btn pri big" data-act="auverified">${at("iverified")}</button><button class="btn" data-act="auresend">${at("resend")}</button><button class="lnk" data-act="auchange">${at("change")}</button></div>`;}
   else if(v.mode==="forgot"){b=head(at("forgot_t"))+`<div class="au">${msg}<div class="lbl">${at("email")}</div><input type="email" id="au_email" name="email" autocomplete="username" autocapitalize="off" spellcheck="false" value="${esc(v.email)}">
     <button class="btn pri big" data-act="aureset">${at("reset_btn")}</button><button class="btn" data-act="auhint">${at("show_hint")}</button><button class="lnk" data-act="aumode" data-v="login">← ${at("back")}</button></div>`;}
