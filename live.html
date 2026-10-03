@@ -182,6 +182,9 @@ h1{font-family:var(--f-disp);font-weight:400;font-size:26px;line-height:1.08;mar
 .intro .cdr.main.red b{color:#ff3b30;text-shadow:0 0 14px rgba(255,59,48,.55)}
 .intro .cdr.up b{font-size:34px;color:#fff}
 .intro .cdl{font-family:var(--f-disp);font-size:24px;padding:6px 0}
+.gobtn{min-height:58px!important;gap:14px!important}
+.gobtn span{font-family:var(--f-disp);font-weight:400;font-size:26px;letter-spacing:.22em;margin-right:-.22em;color:#1a0f05;text-shadow:0 1px 0 rgba(255,250,220,.75),0 -1px 0 rgba(90,50,0,.35)}
+.gobtn .sw{width:40px;height:40px;flex:none;filter:drop-shadow(0 1px 0 rgba(255,250,220,.7))}
 .intro h2{font-family:var(--f-disp);font-size:26px;margin:4px 0 2px;letter-spacing:.02em}
 .intro .ev{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .intro .big{font-size:20px;font-weight:700;margin:2px 0}
@@ -791,6 +794,7 @@ function cdHtml(){const E=EVENT,n=Date.now();
   if(n>=E.tStart)return `<div class="cdr up"><span>${it("cd_on")}</span><b>${fmtD(n-E.tStart)}</b></div>`;
   return (n<E.tMeet?`<div class="cdr"><span>${it("cd_meet")}</span><b>${fmtD(E.tMeet-n)}</b></div>`:"")+`<div class="cdr main${E.tStart-n<3600000?" red":""}"><span>${it("cd_start")}</span><b>${fmtD(E.tStart-n)}</b></div>`;}
 setInterval(()=>{const el=document.getElementById("cdown");if(el)el.innerHTML=cdHtml();},1000);
+function swords(){return `<svg class="sw" viewBox="0 0 32 32" aria-hidden="true"><g fill="#1a0f05"><g transform="rotate(42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g><g transform="rotate(-42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g></g></svg>`;}
 function vIntro(){const E=EVENT;
   return `<div class="intro"><div class="lbl">${it("ttl")}</div><h2>IMMORTAL KOMBAT</h2>
   <div class="ev cd" id="cdown">${cdHtml()}</div>
@@ -807,7 +811,7 @@ function render(){
   if(BOOT){content.innerHTML=`<div class="loading">LOADING…</div>`;$("#top").innerHTML=top();$("#bottom").innerHTML="";return;}
   const keep=content.scrollTop;
   $("#top").innerHTML=top();
-  if(INTRO){content.innerHTML=vIntro();$("#bottom").innerHTML=`<div class="foot"><button class="btn pri big" data-act="intro">⚔️ ${it("go")}</button></div>`;content.scrollTop=0;renderLayer();return;}
+  if(INTRO){content.innerHTML=vIntro();$("#bottom").innerHTML=`<div class="foot"><button class="btn pri big gobtn" data-act="intro">${swords()}<span>${it("go")}</span>${swords()}</button></div>`;content.scrollTop=0;renderLayer();return;}
   if(S.phase==="play"&&S.rounds.length){
     if(lastCur!==null&&S.cur!==lastCur){lastCur=S.cur;showOverlay(false);}lastCur=S.cur;
     content.innerHTML=({round:vRound,table:vTable,fighters:vFighters,money:vMoney,more:vMore}[tab]||vRound)();
