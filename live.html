@@ -713,7 +713,7 @@ function processPhoto(file,color,stylize){return new Promise((res,rej)=>{
 
 /* ---------------- scheduling ---------------- */
 function roundLen(){return S.scoring.mode==="time"?S.scoring.minutes:Math.round(S.scoring.points*.6);}
-function suggest(){const per=roundLen()+S.plan.change;let r=Math.max(1,Math.floor(S.plan.total/per));if(S.format==="americano")r=Math.min(r,S.n-1);return r;}
+function suggest(){return Math.max(2,Math.round(S.plan.total/30)*2);}
 function dur(m){const h=Math.floor(m/60),mm=m%60;return (h?h+" "+t("h")+" ":"")+String(mm).padStart(h?2:1,"0")+" "+t("min");}
 function orderFrom(method){
   const ids=S.players.map(p=>p.id);
@@ -789,9 +789,9 @@ const EVENT={club:"Padel+ Kawe",addr:"Paepargi 11, Tallinn",
   waze:"https://waze.com/ul?q="+encodeURIComponent("Paepargi 11, Tallinn")+"&navigate=yes",
   date:"03.10.2026",tMeet:Date.parse("2026-10-03T17:00:00+03:00"),tStart:Date.parse("2026-10-03T17:30:00+03:00"),tEnd:Date.parse("2026-10-03T20:30:00+03:00"),time:"17:30 – 20:30",meet:"17:00",
   courts:[["№3","Datel","6850#"],["№5","Coolbet","7453#"],["№6","KMG Infra","6645#"]]};
-const IT={ru:{fin:"🏁 Завершить турнир",fin_q:"Завершить турнир сейчас? Итоги — по сыгранным матчам.",resume:"↩ Продолжить турнир",cd_meet:"до сбора",cd_start:"до старта",cd_on:"Идёт уже",cd_end:"Турнир завершён",place:"Место",when:"Когда",meet:"сбор к",courts:"Корты сегодня",code:"код",go:"В БОЙ",ttl:"Турнир"},
-  en:{fin:"🏁 Finish tournament",fin_q:"Finish the tournament now? Results use the matches played.",resume:"↩ Resume tournament",cd_meet:"to meet-up",cd_start:"to start",cd_on:"Playing for",cd_end:"Tournament finished",place:"Venue",when:"When",meet:"meet at",courts:"Today's courts",code:"code",go:"TO BATTLE",ttl:"Tournament"},
-  et:{fin:"🏁 Lõpeta turniir",fin_q:"Lõpetada turniir kohe? Tulemused mängitud matšide järgi.",resume:"↩ Jätka turniiri",cd_meet:"kogunemiseni",cd_start:"stardini",cd_on:"Käib juba",cd_end:"Turniir on läbi",place:"Koht",when:"Millal",meet:"kogunemine",courts:"Tänased väljakud",code:"kood",go:"LAHINGUSSE",ttl:"Turniir"}};
+const IT={ru:{home:"⌂ Стартовая страница",fin:"🏁 Завершить турнир",fin_q:"Завершить турнир сейчас? Итоги — по сыгранным матчам.",resume:"↩ Продолжить турнир",cd_meet:"до сбора",cd_start:"до старта",cd_on:"Идёт уже",cd_end:"Турнир завершён",place:"Место",when:"Когда",meet:"сбор к",courts:"Корты сегодня",code:"код",go:"В БОЙ",ttl:"Турнир"},
+  en:{home:"⌂ Start page",fin:"🏁 Finish tournament",fin_q:"Finish the tournament now? Results use the matches played.",resume:"↩ Resume tournament",cd_meet:"to meet-up",cd_start:"to start",cd_on:"Playing for",cd_end:"Tournament finished",place:"Venue",when:"When",meet:"meet at",courts:"Today's courts",code:"code",go:"TO BATTLE",ttl:"Tournament"},
+  et:{home:"⌂ Avaleht",fin:"🏁 Lõpeta turniir",fin_q:"Lõpetada turniir kohe? Tulemused mängitud matšide järgi.",resume:"↩ Jätka turniiri",cd_meet:"kogunemiseni",cd_start:"stardini",cd_on:"Käib juba",cd_end:"Turniir on läbi",place:"Koht",when:"Millal",meet:"kogunemine",courts:"Tänased väljakud",code:"kood",go:"LAHINGUSSE",ttl:"Turniir"}};
 function it(k){return (IT[S.lang]||IT.ru)[k];}
 function fmtD(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+":":"")+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0");}
 function cdHtml(){const E=EVENT,n=Date.now();
@@ -824,7 +824,7 @@ function render(){
   }else{
     step=Math.min(Math.max(step,0),STEPS.length-1);
     content.innerHTML=(STEPS[step]!=="photos"&&!RO?`<button class="btn" data-act="gostep" data-v="2" style="width:100%;margin-bottom:12px;font-size:16px;min-height:52px">🥋 ${t("reg_btn")}</button>`:"")+`<div class="stepno">${t("step",{a:step+1,b:STEPS.length})}</div><div class="prog">${STEPS.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join("")}</div>`+({count:vCount,names:vNames,photos:vPhotos,format:vFormat,scoring:vScoring,mix:vMix,theme:vTheme,summary:vSummary}[STEPS[step]])();
-    $("#bottom").innerHTML=`<div class="foot">${step>0?`<button class="btn ghost" data-act="step" data-d="-1">← ${t("back")}</button>`:""}${step<STEPS.length-1?`<button class="btn pri big" data-act="step" data-d="1">${t("next")} →</button>`:(RO?"":`<button class="btn pri big" data-act="fight">${t("fight")}</button>`)}</div>`;
+    $("#bottom").innerHTML=`<div class="foot">${step>0?`<button class="btn ghost" data-act="step" data-d="-1">← ${t("back")}</button>`:`<button class="btn ghost" data-act="home">← ${t("back")}</button>`}${step<STEPS.length-1?`<button class="btn pri big" data-act="step" data-d="1">${t("next")} →</button>`:(RO?"":`<button class="btn pri big" data-act="fight">${t("fight")}</button>`)}</div>`;
   }
   content.scrollTop=keep;
   renderLayer();
@@ -969,7 +969,7 @@ function vMore(){
   return `<h1>${t("more_t")}</h1>
   <div class="lbl">${t("theme")}</div><div class="seg" style="grid-template-columns:1fr 1fr;grid-auto-flow:row">${THEMES.map(th=>`<button class="${S.theme===th?"on":""}" data-act="theme" data-v="${th}" ${dis()}>${t("th_"+th)}</button>`).join("")}</div>
   <button class="check ${S.sound?"on":""}" data-act="sound" ${dis()}><i>${S.sound?"✓":""}</i>${t("sound")}</button>
-  ${RO?`<p class="hint" style="margin-top:14px">${t("ro_note")}</p>`:`<button class="btn pri big" style="width:100%;margin-top:18px" data-act="${S.finished?"resume":"finnow"}">${S.finished?it("resume"):it("fin")}</button><div class="set" style="margin-top:12px"><button class="btn" data-act="edit">${t("edit")}</button><button class="btn danger" data-act="ask" data-what="resetres">${t("reset_res")}</button><button class="btn danger" data-act="ask" data-what="newt">${t("new_t")}</button></div>`}
+  ${RO?`<p class="hint" style="margin-top:14px">${t("ro_note")}</p>`:`<button class="btn pri big" style="width:100%;margin-top:18px" data-act="${S.finished?"resume":"finnow"}">${S.finished?it("resume"):it("fin")}</button><div class="set" style="margin-top:12px"><button class="btn" data-act="home">${it("home")}</button><button class="btn" data-act="edit">${t("edit")}</button><button class="btn danger" data-act="ask" data-what="resetres">${t("reset_res")}</button><button class="btn danger" data-act="ask" data-what="newt">${t("new_t")}</button></div>`}
   ${LOCAL?`<p class="hint" style="margin-top:14px">${t("local_note")}</p>`:""}`;
 }
 function tabsBar(){
@@ -1109,7 +1109,7 @@ function act(a,d,el){
       const o=S.mix.order,i=o.indexOf(sel),j=o.indexOf(d.id);if(i>=0&&j>=0)[o[i],o[j]]=[o[j],o[i]];sel=null;break;}
     case "theme":S.theme=d.v;if(S.phase!=="play")autoNext();break;
     case "sound":S.sound=!S.sound;if(S.sound)gong();break;
-    case "home":INTRO=true;render();return;
+    case "home":INTRO=true;render();$("#content").scrollTop=0;return;
     case "finnow":ask(it("fin_q"),()=>{S.finished=true;tab="table";save();render();$("#content").scrollTop=0;});return;
     case "resume":S.finished=false;tab="round";save();render();return;
     case "intro":INTRO=false;render();$("#content").scrollTop=0;return;
