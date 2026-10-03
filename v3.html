@@ -465,6 +465,7 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
 .loading{display:grid;place-items:center;height:100%;font-family:var(--f-disp);font-size:22px;color:var(--mute);letter-spacing:.1em}
 .empty{padding:18px;border:1px dashed var(--line);color:var(--mute);text-align:center}
 @media (pointer:coarse){input,select,textarea{font-size:16px!important}.score input{font-size:32px!important}}
+#dbg{position:fixed;left:4px;right:4px;bottom:4px;max-height:26vh;overflow:hidden;z-index:99999;background:rgba(0,0,0,.72);color:#9f9;font:11px/1.35 ui-monospace,monospace;padding:6px 8px;border:1px solid #3a3;border-radius:8px;white-space:pre-wrap;pointer-events:none}
 </style>
 
 <div class="stage"><div class="device" id="dev"><canvas id="fx" aria-hidden="true"></canvas><div class="crest" aria-hidden="true"></div><div class="island"></div>
@@ -534,26 +535,31 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
     st.owner=cur.uid;st.orgs=[cur.uid];
     await main.set(enc(st));
   }
-  function persist(remember){return auth.setPersistence(remember?firebase.auth.Auth.Persistence.LOCAL:firebase.auth.Auth.Persistence.SESSION);}
+  window.DBG=window.DBG||[];
+  function dbg(m){var t=new Date();window.DBG.push(("0"+t.getMinutes()).slice(-2)+":"+("0"+t.getSeconds()).slice(-2)+" "+m);if(window.DBG.length>40)window.DBG.shift();if(window.onDbg)try{window.onDbg();}catch(e){}}
+  window.dbg=dbg;
+  function step(name,p,ms){dbg(name+" …");return new Promise(function(res,rej){var done=false;var to=setTimeout(function(){if(done)return;done=true;dbg(name+" ✗ timeout "+ms/1000+"s");var e=new Error("timeout");e.code="app/timeout";e.step=name;rej(e);},ms);
+    Promise.resolve(p).then(function(v){if(done)return;done=true;clearTimeout(to);dbg(name+" ✓");res(v);},function(e){if(done)return;done=true;clearTimeout(to);dbg(name+" ✗ "+((e&&e.code)||e));if(e&&typeof e==="object"&&!e.step)e.step=name;rej(e);});});}
+  async function persist(remember){try{await step("persist",auth.setPersistence(remember?firebase.auth.Auth.Persistence.LOCAL:firebase.auth.Auth.Persistence.SESSION),6000);}catch(e){dbg("persist skipped");}}
   window.PAUTH={
     user:function(){return cur;},
     isMember:function(){return isMember();},
     onChange:function(f){subs.push(f);},
     lang:function(l){if(auth)auth.languageCode=l;},
     signUp:async function(email,pass,name,remember){await persist(remember);
-      if(cur&&cur.isAnonymous){var c=firebase.auth.EmailAuthProvider.credential(email,pass);var r=await cur.linkWithCredential(c);cur=r.user;}
-      else{var r2=await auth.createUserWithEmailAndPassword(email,pass);cur=r2.user;}
-      if(name){try{await cur.updateProfile({displayName:name});await fs.doc("users/"+cur.uid).set({name:name},{merge:true});}catch(e){}}
-      await cur.sendEmailVerification();emit();return cur;},
-    signIn:async function(email,pass,remember){await persist(remember);var r=await auth.signInWithEmailAndPassword(email,pass);cur=r.user;emit();return cur;},
+      if(cur&&cur.isAnonymous){var c=firebase.auth.EmailAuthProvider.credential(email,pass);var r=await step("create",cur.linkWithCredential(c),20000);cur=r.user;}
+      else{var r2=await step("create",auth.createUserWithEmailAndPassword(email,pass),20000);cur=r2.user;}
+      if(name){var u0=cur;step("name",u0.updateProfile({displayName:name}),15000).catch(function(){});step("profile",fs.doc("users/"+u0.uid).set({name:name},{merge:true}),15000).catch(function(){});}
+      emit();await step("mail",cur.sendEmailVerification(),20000);return cur;},
+    signIn:async function(email,pass,remember){await persist(remember);var r=await step("signin",auth.signInWithEmailAndPassword(email,pass),20000);cur=r.user;emit();return cur;},
     google:async function(remember){await persist(remember);var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
-      try{var r=await auth.signInWithPopup(p);cur=r.user;}
+      try{var r=await step("google",auth.signInWithPopup(p),180000);cur=r.user;}
       catch(e){if(e&&(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"||e.code==="auth/web-storage-unsupported")){await auth.signInWithRedirect(p);return null;}throw e;}
-      try{var d=await fs.doc("users/"+cur.uid).get();if(!d.exists)await fs.doc("users/"+cur.uid).set({name:cur.displayName||"",photo:""},{merge:true});}catch(e){}
+      var u1=cur;step("profile",fs.doc("users/"+u1.uid).get().then(function(d){if(!d.exists)return fs.doc("users/"+u1.uid).set({name:u1.displayName||"",photo:""},{merge:true});}),15000).catch(function(){});
       emit();return cur;},
-    resend:function(){return cur?cur.sendEmailVerification():Promise.reject(new Error("no user"));},
-    refresh:async function(){if(!cur)return false;await cur.reload();cur=auth.currentUser;try{await cur.getIdToken(true);}catch(e){}emit();if(isMember())seed().catch(function(){});return isMember();},
-    reset:function(email){return auth.sendPasswordResetEmail(email);},
+    resend:function(){return cur?step("mail",cur.sendEmailVerification(),20000):Promise.reject(new Error("no user"));},
+    refresh:async function(){if(!cur)return false;await step("reload",cur.reload(),15000);cur=auth.currentUser;try{await cur.getIdToken(true);}catch(e){}emit();if(isMember())seed().catch(function(){});return isMember();},
+    reset:function(email){return step("reset",auth.sendPasswordResetEmail(email),20000);},
     signOut:async function(){await auth.signOut();},
     profile:async function(uid){var d=await fs.doc("users/"+(uid||cur.uid)).get();return d.exists?d.data():null;},
     saveProfile:function(data){return fs.doc("users/"+cur.uid).set(data,{merge:true});},
@@ -969,7 +975,7 @@ role_org:"Организатор",role_pl:"Игрок",untitled:"Турнир б
 ev_step:"Событие",ev_title:"Название турнира",ev_date:"Дата",ev_start:"Начало",ev_end:"Конец",ev_meet:"Сбор",ev_club:"Клуб",ev_addr:"Адрес",ev_courts:"Корты",ev_num:"№",ev_cname:"Название",ev_code:"Код входа",ev_h:"Это увидят игроки на странице турнира. Коды кортов видят только вошедшие.",
 st_live:"LIVE · раунд {r} из {n}",st_done:"Турнир завершён",winner:"Победитель",results:"Итоги",players_n:"Записано: {a} из {b}",codes_hidden:"Коды кортов видны после входа.",
 orgs_t:"Организаторы",orgs_h:"Добавь соорганизаторов из бойцов, которые зарегистрировались в турнире.",orgs_none:"Пока никто из бойцов не зарегистрировался со своим аккаунтом.",owner:"создатель",add:"Добавить",remove:"Убрать",acct_in:"👤 Войти",acct_me:"👤 Профиль",theme_m:"Оформление",th_auto:"Авто",th_light:"Светлое",th_dark:"Тёмное",
-e_inuse:"Этот email уже зарегистрирован — войди.",e_mail:"Проверь email — похоже, опечатка.",e_weak:"Пароль слишком короткий — нужно от 6 символов.",e_cred:"Неверный email или пароль.",e_many:"Слишком много попыток. Подожди пару минут.",e_net:"Нет связи. Проверь интернет.",e_pop:"Окно входа закрыто.",e_gen:"Не получилось: {c}",e_empty:"Заполни email и пароль.",show:"показать",hide:"скрыть"},
+e_inuse:"Этот email уже зарегистрирован — войди.",e_timeout:"Не получилось: {s} — нет ответа. Проверь интернет и попробуй ещё раз.",wait:"Подождите…",st_persist:"сохранение входа",st_create:"создание аккаунта",st_mail:"отправка письма",st_signin:"вход",st_google:"вход через Google",st_reload:"проверка подтверждения",st_reset:"отправка письма для сброса",st_x:"запрос",e_mail:"Проверь email — похоже, опечатка.",e_weak:"Пароль слишком короткий — нужно от 6 символов.",e_cred:"Неверный email или пароль.",e_many:"Слишком много попыток. Подожди пару минут.",e_net:"Нет связи. Проверь интернет.",e_pop:"Окно входа закрыто.",e_gen:"Не получилось: {c}",e_empty:"Заполни email и пароль.",show:"показать",hide:"скрыть"},
 en:{login:"Sign in",register:"Sign up",email:"Email",pass:"Password",name:"Name",nick:"Nickname",hint:"Password hint (optional)",hint_note:"The hint stays on this phone only.",
 remember:"Remember me",go_in:"Sign in",go_reg:"Create account",forgot:"Forgot password",google:"Sign in with Google",or:"or",have:"Have an account? Sign in",noacc:"No account? Sign up",
 need:"Sign in to enter scores and change the tournament. Watching works without signing in.",verify_t:"Confirm your email",verify_n:"We sent a message to {e}. Open it, tap the link, then come back here.",
@@ -983,7 +989,7 @@ role_org:"Organizer",role_pl:"Player",untitled:"Untitled tournament",not_found:"
 ev_step:"Event",ev_title:"Tournament name",ev_date:"Date",ev_start:"Start",ev_end:"End",ev_meet:"Meet",ev_club:"Club",ev_addr:"Address",ev_courts:"Courts",ev_num:"No.",ev_cname:"Name",ev_code:"Door code",ev_h:"Players see this on the tournament page. Court codes are shown only to signed-in players.",
 st_live:"LIVE · round {r} of {n}",st_done:"Tournament finished",winner:"Winner",results:"Results",players_n:"Signed up: {a} of {b}",codes_hidden:"Court codes are visible after signing in.",
 orgs_t:"Organizers",orgs_h:"Add co-organizers from fighters who registered in this tournament.",orgs_none:"No fighter has registered with an account yet.",owner:"creator",add:"Add",remove:"Remove",acct_in:"👤 Sign in",acct_me:"👤 Profile",theme_m:"Appearance",th_auto:"Auto",th_light:"Light",th_dark:"Dark",
-e_inuse:"This email is already registered — sign in.",e_mail:"Check the email — looks like a typo.",e_weak:"Password too short — 6 characters or more.",e_cred:"Wrong email or password.",e_many:"Too many attempts. Wait a couple of minutes.",e_net:"No connection. Check the internet.",e_pop:"Sign-in window closed.",e_gen:"Something went wrong: {c}",e_empty:"Fill in email and password.",show:"show",hide:"hide"},
+e_inuse:"This email is already registered — sign in.",e_timeout:"Failed: {s} — no response. Check the connection and try again.",wait:"Please wait…",st_persist:"saving sign-in",st_create:"creating the account",st_mail:"sending the email",st_signin:"signing in",st_google:"Google sign-in",st_reload:"checking confirmation",st_reset:"sending the reset email",st_x:"request",e_mail:"Check the email — looks like a typo.",e_weak:"Password too short — 6 characters or more.",e_cred:"Wrong email or password.",e_many:"Too many attempts. Wait a couple of minutes.",e_net:"No connection. Check the internet.",e_pop:"Sign-in window closed.",e_gen:"Something went wrong: {c}",e_empty:"Fill in email and password.",show:"show",hide:"hide"},
 et:{login:"Sisene",register:"Registreeru",email:"E-post",pass:"Parool",name:"Nimi",nick:"Hüüdnimi",hint:"Parooli vihje (valikuline)",hint_note:"Vihje jääb ainult sellesse telefoni.",
 remember:"Jäta mind meelde",go_in:"Sisene",go_reg:"Loo konto",forgot:"Unustasin parooli",google:"Sisene Google'iga",or:"või",have:"Konto on olemas? Sisene",noacc:"Kontot pole? Registreeru",
 need:"Sisene, et tulemusi sisestada ja turniiri muuta. Vaadata saab ka sisenemata.",verify_t:"Kinnita e-post",verify_n:"Saatsime kirja aadressile {e}. Ava see, vajuta linki ja tule tagasi.",
@@ -997,7 +1003,7 @@ role_org:"Korraldaja",role_pl:"Mängija",untitled:"Nimetu turniir",not_found:"Tu
 ev_step:"Sündmus",ev_title:"Turniiri nimi",ev_date:"Kuupäev",ev_start:"Algus",ev_end:"Lõpp",ev_meet:"Kogunemine",ev_club:"Klubi",ev_addr:"Aadress",ev_courts:"Väljakud",ev_num:"Nr",ev_cname:"Nimi",ev_code:"Uksekood",ev_h:"Mängijad näevad seda turniiri lehel. Väljakute koode näevad ainult sisse loginud.",
 st_live:"LIVE · voor {r}/{n}",st_done:"Turniir on lõppenud",winner:"Võitja",results:"Tulemused",players_n:"Registreerunud: {a}/{b}",codes_hidden:"Väljakute koodid on nähtavad pärast sisselogimist.",
 orgs_t:"Korraldajad",orgs_h:"Lisa kaaskorraldajad turniiril registreerunud võitlejate seast.",orgs_none:"Ükski võitleja pole veel oma kontoga registreerunud.",owner:"looja",add:"Lisa",remove:"Eemalda",acct_in:"👤 Sisene",acct_me:"👤 Profiil",theme_m:"Kujundus",th_auto:"Auto",th_light:"Hele",th_dark:"Tume",
-e_inuse:"See e-post on juba registreeritud — sisene.",e_mail:"Kontrolli e-posti — tundub kirjaviga.",e_weak:"Parool on liiga lühike — vähemalt 6 märki.",e_cred:"Vale e-post või parool.",e_many:"Liiga palju katseid. Oota paar minutit.",e_net:"Ühendus puudub.",e_pop:"Sisenemisaken suleti.",e_gen:"Ei õnnestunud: {c}",e_empty:"Täida e-post ja parool.",show:"näita",hide:"peida"}};
+e_inuse:"See e-post on juba registreeritud — sisene.",e_timeout:"Ei õnnestunud: {s} — vastust pole. Kontrolli internetti ja proovi uuesti.",wait:"Oota…",st_persist:"sisselogimise salvestamine",st_create:"konto loomine",st_mail:"kirja saatmine",st_signin:"sisselogimine",st_google:"Google'i sisselogimine",st_reload:"kinnituse kontroll",st_reset:"lähtestuskirja saatmine",st_x:"päring",e_mail:"Kontrolli e-posti — tundub kirjaviga.",e_weak:"Parool on liiga lühike — vähemalt 6 märki.",e_cred:"Vale e-post või parool.",e_many:"Liiga palju katseid. Oota paar minutit.",e_net:"Ühendus puudub.",e_pop:"Sisenemisaken suleti.",e_gen:"Ei õnnestunud: {c}",e_empty:"Täida e-post ja parool.",show:"näita",hide:"peida"}};
 function at(k,v){let x=(AT[S.lang]||AT.ru)[k];if(x===undefined)x=AT.ru[k]||k;if(v)for(const q in v)x=x.split("{"+q+"}").join(v[q]);return x;}
 const AUTHON=()=>!!window.PAUTH&&!LOCAL;
 const ME=()=>window.PAUTH?window.PAUTH.user():null;
@@ -1017,9 +1023,9 @@ function myEntry(){const e=EV();return {title:e.title||"",date:e.date||"",start:
 function syncMy(){if(!AUTHON()||!window.PAUTH.isMember()||MODE!=="t"||BOOT||NOTFOUND)return;const o=S.orgs||[];let role=null;if(S.owner===UID||o.includes(UID))role="org";else if(Object.values(REG).some(r=>r&&r.uid===UID))role="player";if(!role)return;const m=myEntry();m.role=role;const key=JSON.stringify(m).replace(/"ts":\d+/,"");if(syncMy.last===key)return;syncMy.last=key;window.PAUTH.setMy(window.TCODE,m).catch(()=>{});}
 function evSet(k,v){S.event=EV();S.event[k]=v;save();}
 function evCourtsSync(){const e=EV();const n=nC();const c=(e.courts||[]).slice(0,n);while(c.length<n)c.push({num:"",name:"",code:""});S.event=Object.assign(e,{courts:c});c.forEach((x,i)=>{if(S.courts[i])S.courts[i].name=[x.num?"№"+x.num:"",x.name].filter(Boolean).join(" ");});}
-let AUTHV=null,PROF=null,profUnsub=null,AUTHBUSY=false;
+let AUTHV=null,PROF=null,profUnsub=null,AUTHBUSY=false,AUTHGEN=0;
 function openAuth(mode,msg){AUTHV={mode:mode||"login",msg:msg||"",err:"",ok:"",email:(AUTHV&&AUTHV.email)||"",remember:true,show:false};renderLayer();}
-function authErr(e){const c=(e&&e.code)||"";const m={"auth/email-already-in-use":"e_inuse","auth/credential-already-in-use":"e_inuse","auth/invalid-email":"e_mail","auth/weak-password":"e_weak","auth/wrong-password":"e_cred","auth/invalid-credential":"e_cred","auth/user-not-found":"e_cred","auth/invalid-login-credentials":"e_cred","auth/too-many-requests":"e_many","auth/network-request-failed":"e_net","auth/popup-closed-by-user":"e_pop","auth/cancelled-popup-request":"e_pop"}[c];return m?at(m):at("e_gen",{c:c||String(e&&e.message||e)});}
+function authErr(e){const c=(e&&e.code)||"";const m={"auth/email-already-in-use":"e_inuse","auth/credential-already-in-use":"e_inuse","auth/invalid-email":"e_mail","auth/weak-password":"e_weak","auth/wrong-password":"e_cred","auth/invalid-credential":"e_cred","auth/user-not-found":"e_cred","auth/invalid-login-credentials":"e_cred","auth/too-many-requests":"e_many","auth/network-request-failed":"e_net","auth/popup-closed-by-user":"e_pop","auth/cancelled-popup-request":"e_pop"}[c];if(c==="app/timeout")return at("e_timeout",{s:at("st_"+(e.step||"x"))});return m?at(m):at("e_gen",{c:c||String(e&&e.message||e)});}
 const GICON='<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
 const USERICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg>';
 function hintKey(e){return "pfn_hint:"+String(e||"").trim().toLowerCase();}
@@ -1030,10 +1036,10 @@ function authSheet(){const v=AUTHV,u=ME();let b="";
   const rem=`<button type="button" class="check ${v.remember?"on":""}" data-act="aurem" style="margin-top:0"><i>${v.remember?"✓":""}</i>${at("remember")}</button>`;
   const gbtn=`<div class="or">${at("or")}</div><button type="button" class="gbtn2" data-act="augoogle">${GICON}${at("google")}</button>`;
   if(v.mode==="login"){b=head(at("login"))+`<form class="au" data-sub="auin" autocomplete="on">${msg}<div class="lbl">${at("email")}</div><input type="email" id="au_email" name="email" autocomplete="username" autocapitalize="off" spellcheck="false" value="${esc(v.email)}"><div class="lbl">${at("pass")}</div>${pw("au_pass","current-password")}${rem}
-    <button class="btn pri big" type="submit">${at("go_in")}</button><button type="button" class="lnk" data-act="aumode" data-v="forgot">${at("forgot")}</button>${gbtn}<button type="button" class="btn" data-act="aumode" data-v="register">${at("noacc")}</button></form>`;}
+    <button class="btn pri big" type="submit" ${AUTHBUSY?"disabled":""}>${AUTHBUSY?at("wait"):at("go_in")}</button><button type="button" class="lnk" data-act="aumode" data-v="forgot">${at("forgot")}</button>${gbtn}<button type="button" class="btn" data-act="aumode" data-v="register">${at("noacc")}</button></form>`;}
   else if(v.mode==="register"){b=head(at("register"))+`<form class="au" data-sub="aureg" autocomplete="on">${msg}<div class="lbl">${at("name")}</div><input type="text" id="au_name" name="name" autocomplete="name"><div class="lbl">${at("email")}</div><input type="email" id="au_email" name="email" autocomplete="username" autocapitalize="off" spellcheck="false" value="${esc(v.email)}"><div class="lbl">${at("pass")}</div>${pw("au_pass","new-password")}
     <div class="lbl">${at("hint")}</div><input type="text" id="au_hint" name="hint" autocomplete="off" data-1p-ignore><p class="note">${at("hint_note")}</p>${rem}
-    <button class="btn pri big" type="submit">${at("go_reg")}</button>${gbtn}<button type="button" class="btn" data-act="aumode" data-v="login">${at("have")}</button></form>`;}
+    <button class="btn pri big" type="submit" ${AUTHBUSY?"disabled":""}>${AUTHBUSY?at("wait"):at("go_reg")}</button>${gbtn}<button type="button" class="btn" data-act="aumode" data-v="login">${at("have")}</button></form>`;}
   else if(v.mode==="verify"){const e=(u&&u.email)||v.email;b=head(at("verify_t"))+`<div class="au">${msg}<p>${esc(at("verify_n",{e:e}))}</p><p class="note">${at("spam")}</p>
     <button class="btn pri big" data-act="auverified">${at("iverified")}</button><button class="btn" data-act="auresend">${at("resend")}</button><button class="lnk" data-act="auchange">${at("change")}</button></div>`;}
   else if(v.mode==="forgot"){b=head(at("forgot_t"))+`<div class="au">${msg}<div class="lbl">${at("email")}</div><input type="email" id="au_email" name="email" autocomplete="username" autocapitalize="off" spellcheck="false" value="${esc(v.email)}">
@@ -1044,8 +1050,8 @@ function authSheet(){const v=AUTHV,u=ME();let b="";
     <div class="lbl">${at("name")}</div><input type="text" id="pf_name" value="${esc(p.name||u.displayName||"")}"><div class="lbl">${at("nick")}</div><input type="text" id="pf_nick" value="${esc(p.nick||"")}">
     <button class="btn pri big" data-act="ausave">${at("save")}</button><button class="btn" data-act="auout">${at("out")}</button></div>`;}
   return `<div class="confirm" style="place-items:end center;padding:0" data-act="authclose"><div class="box sheet" data-stop="1">${b}</div></div>`;}
-async function authAct(a,d){const v=AUTHV;if(!v||AUTHBUSY)return;const g=id=>{const e=document.getElementById(id);return e?e.value.trim():"";};
-  const busy=async f=>{AUTHBUSY=true;v.err="";v.ok="";try{await f();}catch(e){v.err=authErr(e);}AUTHBUSY=false;renderLayer();};
+async function authAct(a,d){const v=AUTHV;if(!v)return;if(a==="authclose"){AUTHV=null;AUTHBUSY=false;AUTHGEN++;renderLayer();return;}if(AUTHBUSY&&a!=="aurem")return;const g=id=>{const e=document.getElementById(id);return e?e.value.trim():"";};
+  const busy=async f=>{const keep={};["au_email","au_name","au_hint","au_pass"].forEach(i=>keep[i]=(document.getElementById(i)||{}).value);const gen=++AUTHGEN;AUTHBUSY=true;v.err="";v.ok="";renderLayer();for(const i in keep){const el=document.getElementById(i);if(el&&keep[i]!=null)el.value=keep[i];}try{await f();}catch(e){if(gen===AUTHGEN)v.err=authErr(e);if(window.dbg)window.dbg("error: "+((e&&e.code)||e));}if(gen!==AUTHGEN)return;AUTHBUSY=false;renderLayer();for(const i in keep){const el=document.getElementById(i);if(el&&keep[i]!=null&&!el.value)el.value=keep[i];}};
   if(a==="authclose"){AUTHV=null;renderLayer();return;}
   if(a==="aumode"){v.email=g("au_email")||v.email;v.mode=d.v;v.err="";v.ok="";v.msg="";renderLayer();return;}
   if(a==="aushow"){const keep={};["au_email","au_name","au_hint","au_pass","pf_name","pf_nick"].forEach(i=>keep[i]=g(i));v.show=!v.show;renderLayer();for(const i in keep){const e=document.getElementById(i);if(e)e.value=keep[i];}return;}
@@ -1443,5 +1449,12 @@ applyTheme();{const LL=localLang();if(LL)S.lang=LL;}
 try{document.fonts&&document.fonts.ready.then(()=>{if(!BOOT)render();});}catch(e){}
 render();boot();
 })();
+</script>
+<script>
+(function(){if(new URLSearchParams(location.search).get("debug")!=="1")return;window.DBG=window.DBG||[];
+function show(){var d=document.getElementById("dbg");if(!d){d=document.createElement("div");d.id="dbg";document.body.appendChild(d);}d.textContent="debug · "+navigator.userAgent.replace(/^.*?\(/,"(").slice(0,60)+"\n"+window.DBG.slice(-15).join("\n");d.scrollTop=1e6;}
+window.onDbg=show;window.addEventListener("error",function(e){(window.dbg||function(m){window.DBG.push(m)})("JS error: "+e.message);show();});
+window.addEventListener("unhandledrejection",function(e){(window.dbg||function(m){window.DBG.push(m)})("promise: "+((e.reason&&(e.reason.code||e.reason.message))||e.reason));show();});
+document.addEventListener("DOMContentLoaded",show);})();
 </script>
 </body></html>
