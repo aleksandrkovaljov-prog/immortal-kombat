@@ -220,6 +220,25 @@ input[type=email],input[type=password]{background:var(--surf);border:1px solid v
 .au .or::before,.au .or::after{content:"";flex:1;border-top:1px solid var(--line)}
 .pw{position:relative}.pw input{padding-right:48px}.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--mute);font-size:13px;padding:8px;cursor:pointer}
 @media (max-width:429px){.wm{height:clamp(36px,10.6vw,50px)!important}:root[data-skin="immortal"][lang] .langs button{padding:10px 9px!important}}
+.home{display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.home .lbl{margin:10px 0 0}
+.hero{text-align:center;padding:10px 4px 4px;display:grid;gap:10px;justify-items:center}
+.hero h2{font-family:var(--f-disp);font-weight:400;font-size:24px;line-height:1.15;margin:4px 0 2px;text-wrap:balance}
+.hero p{margin:0;color:var(--mute);font-size:15px;line-height:1.45;max-width:34ch}
+.hbtns{display:grid;gap:12px;margin-top:8px}
+.mycard{display:block;width:100%;text-align:left;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:inherit;cursor:pointer}
+.mc-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.mc-top b{font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc-role{flex:none;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.mc-sub{color:var(--mute);font-size:13px;margin-top:4px}
+.intro .ttl{font-family:var(--f-disp);font-weight:400;font-size:22px;margin:0 0 10px;text-align:center;text-wrap:balance}
+.intro .when2{color:var(--mute);font-size:13px;text-align:center;margin:-4px 0 6px}
+.evg{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.evf{min-width:0}
+.home .by{text-align:center;color:var(--mute);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-top:auto;padding-top:14px}.home .by b{font-weight:800}.home{min-height:100%}
+.evc{display:grid;grid-template-columns:58px 1fr 1fr;gap:8px;margin-bottom:8px}
+input[type=date],input[type=time]{background:var(--surf);border:1px solid var(--line);padding:10px;font-size:15px;width:100%;min-width:0;color:inherit;border-radius:12px;font-family:inherit}
+:root[data-skin^="immortal"] input[type=date],:root[data-skin^="immortal"] input[type=time]{background:#000;border-color:rgba(230,194,90,.45);color:#fffbe8;color-scheme:dark}
+:root[data-light] input[type=date],:root[data-light] input[type=time]{background:#fffdf7!important;color:#2a1f0c!important;color-scheme:light}
+.orgrow{justify-content:space-between;flex-wrap:nowrap;padding:8px 0;border-top:1px solid var(--line)}
 .intro .tools{display:flex;gap:10px;margin-top:8px}.intro .tools .btn{flex:1;min-height:40px;font-size:12px}
 .pav{width:84px;height:84px;border-radius:16px;overflow:hidden;border:1px solid var(--line);display:grid;place-items:center;background:var(--surf2);flex:none}
 .pav img{width:100%;height:100%;object-fit:cover}
@@ -464,8 +483,8 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
 (function(){
   var CFG={apiKey:"AIzaSyDDKbW079xjjx3kPxtPNu4HLPbpER-Q2f8",authDomain:"immortal-kombat.firebaseapp.com",projectId:"immortal-kombat",storageBucket:"immortal-kombat.firebasestorage.app",messagingSenderId:"759810929125",appId:"1:759810929125:web:fc16410fce534a45047f0c"};
   var q=new URLSearchParams(location.search);
-  var CODE=(q.get("t")||"ik0310").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40)||"ik0310";
-  window.TCODE=CODE;
+  var CODE=(q.get("t")||"").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40);
+  window.TCODE=CODE;window.HASCODE=!!CODE;window.ISNEW=q.get("new")==="1";
   var enc=function(o){var r={};for(var k in o){if(o[k]!==undefined)r[k]=JSON.stringify(o[k]);}return r;};
   var dec=function(o){var r={};for(var k in o){try{r[k]=JSON.parse(o[k]);}catch(e){r[k]=o[k];}}return r;};
   var fs=null,auth=null,ready=null,cur=null,subs=[];
@@ -505,7 +524,7 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
     onSnapshot:function(ok,err){return ref.onSnapshot(function(qs){ok({docs:qs.docs.map(wrapDocSnap)});},err||function(){});}
   };}
   async function seed(){
-    if(!cur||cur.isAnonymous||!isMember())return;
+    if(!cur||cur.isAnonymous||!isMember()||CODE!=="ik0310")return;
     var main=fs.doc(base()+"t/main");var s=await main.get();
     if(s.exists||!window.PRESET)return;
     var P=window.PRESET,ph=P.photos||{};
@@ -537,11 +556,13 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
     signOut:async function(){await auth.signOut();},
     profile:async function(uid){var d=await fs.doc("users/"+(uid||cur.uid)).get();return d.exists?d.data():null;},
     saveProfile:function(data){return fs.doc("users/"+cur.uid).set(data,{merge:true});},
+    myList:function(cb){if(!cur||cur.isAnonymous)return function(){};return fs.collection("users/"+cur.uid+"/my").onSnapshot(function(qs){var out=[];qs.docs.forEach(function(d){var x=d.data();x.code=d.id;out.push(x);});cb(out);},function(){cb([]);});},
+    setMy:function(code,data){if(!cur||cur.isAnonymous)return Promise.resolve();return fs.doc("users/"+cur.uid+"/my/"+code).set(data,{merge:true});},
     watchProfile:function(cb){if(!cur)return function(){};return fs.doc("users/"+cur.uid).onSnapshot(function(d){cb(d.exists?d.data():null);},function(){});}
   };
   window.claude={use:async function(name){
     await init();
-    if(name==="db"){try{await seed();}catch(e){}
+    if(name==="db"){if(!CODE)return null;try{await seed();}catch(e){}
       return {doc:function(p){return wrapDoc(fs.doc(base()+p));},collection:function(p){return wrapCol(fs.collection(base()+p));}};}
     if(name==="user")return {
       can:async function(){return true;},
@@ -650,7 +671,9 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 const clone=o=>JSON.parse(JSON.stringify(o));
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 const nC=()=>Math.max(1,Math.floor(S.n/4));
-const P=id=>{const b=S.players.find(p=>p.id===id)||{id:id,name:"?",nick:"",c:0};const r=REG[id];return r?Object.assign({},b,{name:r.name||b.name,nick:r.nick!=null?r.nick:b.nick,g:r.g||b.g,reg:true}):b;};
+const P0=id=>{const b=S.players.find(p=>p.id===id)||{id:id,name:"?",nick:"",c:0};const r=REG[id];return r?Object.assign({},b,{name:r.name||b.name,nick:r.nick!=null?r.nick:b.nick,g:r.g||b.g,reg:true}):b;};
+const PUBLIC=()=>typeof AUTHON==="function"&&AUTHON()&&!window.PAUTH.isMember();
+const P=id=>{const p=P0(id);if(!PUBLIC())return p;return Object.assign({},p,{name:p.nick||initials(p.name),nick:""});};
 const Pb=id=>S.players.find(p=>p.id===id)||{};
 const pIdx=id=>Math.max(0,S.players.findIndex(p=>p.id===id));
 
@@ -734,6 +757,9 @@ function remote(data){
   render();
 }
 async function boot(){
+  if(MODE==="home"){try{if(window.claude)await window.claude.use("user");}catch(e){}
+    LOCAL=!window.PAUTH;BOOT=false;if(window.PAUTH){window.PAUTH.onChange(u=>{UID=u&&u.uid;if(myUnsub){myUnsub();myUnsub=null;}MY=[];if(profUnsub){profUnsub();profUnsub=null;}PROF=null;if(u&&!u.isAnonymous){myUnsub=window.PAUTH.myList(l=>{MY=l;render();});profUnsub=window.PAUTH.watchProfile(p=>{PROF=p;render();renderLayer();});}render();renderLayer();});const u0=window.PAUTH.user();if(u0){UID=u0.uid;if(!u0.isAnonymous){myUnsub=window.PAUTH.myList(l=>{MY=l;render();});profUnsub=window.PAUTH.watchProfile(p=>{PROF=p;render();});}}}
+    render();return;}
   let dbx=null;
   try{if(window.claude&&typeof window.claude.use==="function")dbx=await window.claude.use("db");}catch(e){dbx=null;}
   if(dbx){
@@ -747,8 +773,10 @@ async function boot(){
     let first=true;
     mainRef.onSnapshot(s=>{
       if(s.exists)remote(s.data());
-      else if(first){normalize();}
-      if(first){first=false;BOOT=false;lastCur=S.cur;render();}
+      else if(first){normalize();if(window.ISNEW&&window.PAUTH&&window.PAUTH.isMember()){S.owner=UID;S.orgs=[UID];S.event=evDef();S.lang=localLang()||S.lang;evCourtsSync();INTRO=false;step=0;save();try{history.replaceState(null,"",location.pathname+"?t="+window.TCODE);}catch(e){}}else if(window.TCODE!=="ik0310")NOTFOUND=true;}
+      else if(s.exists)NOTFOUND=false;
+      if(!first)setTimeout(syncMy,200);
+      if(first){first=false;BOOT=false;lastCur=S.cur;render();setTimeout(syncMy,400);}
     },e=>{toast(t("save_err"));});
     db.collection("photos").onSnapshot(qs=>{const m={};qs.docs.forEach(d=>{const x=d.data();if(x&&x.src)m[d.id]=x.src;});PH=m;if(!BOOT)render();},()=>{});
     setTimeout(()=>{if(BOOT){BOOT=false;normalize();render();}},6000);
@@ -872,7 +900,7 @@ function fightSfx(r){if(!S.sound)return;const a=ac();
 
 /* ---------------- render ---------------- */
 const $=s=>document.querySelector(s);
-const STEPS=["count","names","photos","format","scoring","mix","theme","summary"];
+const STEPS=["count","event","names","photos","format","scoring","mix","theme","summary"];
 let INTRO=true;
 const EVENT={club:"Padel+ Kawe",addr:"Paepargi 11, Tallinn",
   gmaps:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("Padel+ Kawe, Paepargi 11, Tallinn"),
@@ -883,22 +911,49 @@ const IT={ru:{home:"⌂ Стартовая страница",fin:"🏁 Заве�
   en:{home:"⌂ Start page",fin:"🏁 Finish tournament",fin_q:"Finish the tournament now? Results use the matches played.",resume:"↩ Resume tournament",cd_meet:"to meet-up",cd_start:"to start",cd_on:"Playing for",cd_end:"Tournament finished",place:"Venue",when:"When",meet:"meet at",courts:"Today's courts",code:"code",go:"TO BATTLE",ttl:"Tournament"},
   et:{home:"⌂ Avaleht",fin:"🏁 Lõpeta turniir",fin_q:"Lõpetada turniir kohe? Tulemused mängitud matšide järgi.",resume:"↩ Jätka turniiri",cd_meet:"kogunemiseni",cd_start:"stardini",cd_on:"Käib juba",cd_end:"Turniir on läbi",place:"Koht",when:"Millal",meet:"kogunemine",courts:"Tänased väljakud",code:"kood",go:"LAHINGUSSE",ttl:"Turniir"}};
 function it(k){return (IT[S.lang]||IT.ru)[k];}
-function fmtD(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+":":"")+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0");}
-function cdHtml(){const E=EVENT,n=Date.now();
-  if(n>=E.tEnd)return `<div class="cdl">${it("cd_end")}</div>`;
-  if(n>=E.tStart)return `<div class="cdr up"><span>${it("cd_on")}</span><b>${fmtD(n-E.tStart)}</b></div>`;
-  return (n<E.tMeet?`<div class="cdr"><span>${it("cd_meet")}</span><b>${fmtD(E.tMeet-n)}</b></div>`:"")+`<div class="cdr main${E.tStart-n<3600000?" red":""}"><span>${it("cd_start")}</span><b>${fmtD(E.tStart-n)}</b></div>`;}
+function fmtD(ms){ms=Math.max(0,ms);if(ms>=86400000){const d=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);return d+({ru:"д ",en:"d ",et:"p "}[S.lang]||"д ")+String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0");}const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+":":"")+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0");}
+function cdHtml(){const E=evTimes(),n=Date.now();if(!E)return "";
+  if(n>=E.end)return `<div class="cdl">${it("cd_end")}</div>`;
+  if(n>=E.start)return `<div class="cdr up"><span>${it("cd_on")}</span><b>${fmtD(n-E.start)}</b></div>`;
+  return (E.meet&&n<E.meet?`<div class="cdr"><span>${it("cd_meet")}</span><b>${fmtD(E.meet-n)}</b></div>`:"")+`<div class="cdr main${E.start-n<3600000?" red":""}"><span>${it("cd_start")}</span><b>${fmtD(E.start-n)}</b></div>`;}
 addEventListener("resize",()=>{if(INTRO)render();});
 setInterval(()=>{const el=document.getElementById("cdown");if(el)el.innerHTML=cdHtml();},1000);
 function swords(){return `<svg class="sw" viewBox="0 0 32 32" aria-hidden="true"><g fill="#1a0f05"><g transform="rotate(42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g><g transform="rotate(-42 16 16)"><path d="M14.6 3 16 0.6 17.4 3V19.5h-2.8z"/><path d="M10 19.3h12a1 1 0 0 1 0 2.6H10a1 1 0 0 1 0-2.6z"/><rect x="14.9" y="21.9" width="2.2" height="5.4" rx=".6"/><circle cx="16" cy="29.3" r="2"/></g></g></svg>`;}
-function vIntro(){const E=EVENT;
-  return `<div class="intro">
-  <div class="ev cd"><div id="cdown">${cdHtml()}</div><div class="when">${E.date} · ${E.time} · ${it("meet")} ${E.meet}</div></div>
-  <div class="lbl">${it("courts")}</div><div class="ev">${E.courts.map(c=>`<div class="crt"><b>${c[0]}</b><span>${esc(c[1])}</span><code>${it("code")} ${c[2]}</code></div>`).join("")}</div>
-  <div class="lbl push">${it("place")}</div><div class="ev"><div class="big">${esc(E.club)}</div><div>${esc(E.addr)}</div>
-   <div class="lnks"><a class="btn" href="${E.gmaps}" target="_blank" rel="noopener">Google Maps</a><a class="btn" href="${E.waze}" target="_blank" rel="noopener">Waze</a></div></div>
-  <div class="tools"><button class="btn" data-act="copylink">${at("copy")}</button>${AUTHON()?`<button class="btn" data-act="acct">${window.PAUTH.isMember()?at("acct_me"):at("acct_in")}</button>`:""}</div>
+function vEvent(){const e=EV();const n=nC();const cs=(e.courts||[]).slice(0,n);while(cs.length<n)cs.push({num:"",name:"",code:""});const ro=isOrg()?"":"disabled";
+  const f=(k,type,ph)=>`<div class="evf"><div class="lbl">${at("ev_"+k)}</div><input type="${type}" id="ev_${k}" data-in="ev" data-k="${k}" value="${esc(e[k]||"")}" ${ph?`placeholder="${esc(ph)}"`:""} ${ro}></div>`;
+  return `<h1>${at("ev_step")}</h1><p class="hint">${at("ev_h")}</p>${f("title","text","Immortal Kombat")}
+  <div class="evg">${f("date","date")}${f("start","time")}${f("end","time")}${f("meet","time")}</div>${f("club","text","Padel+ Kawe")}${f("addr","text","Paepargi 11, Tallinn")}
+  <div class="lbl">${at("ev_courts")}</div>${cs.map((c,i)=>`<div class="evc"><input type="text" id="evn_${i}" data-in="evc" data-i="${i}" data-f="num" value="${esc(c.num)}" placeholder="${at("ev_num")}" inputmode="numeric" ${ro}><input type="text" id="evm_${i}" data-in="evc" data-i="${i}" data-f="name" value="${esc(c.name)}" placeholder="${at("ev_cname")}" ${ro}><input type="text" id="evk_${i}" data-in="evc" data-i="${i}" data-f="code" value="${esc(c.code)}" placeholder="${at("ev_code")}" ${ro}></div>`).join("")}`;}
+function mapsLinks(e){const q=[e.club,e.addr].filter(Boolean).join(", ");if(!q)return "";return `<div class="lnks"><a class="btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener">Google Maps</a><a class="btn" href="https://waze.com/ul?q=${encodeURIComponent(e.addr||q)}&navigate=yes" target="_blank" rel="noopener">Waze</a></div>`;}
+function toolsRow(){const m=AUTHON()&&window.PAUTH.isMember();return `<div class="tools"><button class="btn" data-act="copylink">${at("copy")}</button>${AUTHON()?(m?`<button class="btn" data-act="mytour">${at("my_t")}</button>`:`<button class="btn" data-act="acct">${at("acct_in")}</button>`):""}</div>`;}
+function vIntro(){const e=EV(),st=evState(),mem=!AUTHON()||window.PAUTH.isMember();const cs=(e.courts||[]).filter(c=>c&&(c.name||c.num||c.code));
+  if(NOTFOUND)return `<div class="intro"><div class="ev"><div class="big">${at("not_found")}</div></div>${toolsRow()}</div>`;
+  let top="";
+  if(st==="live")top=`<div class="ev cd"><div class="cdl">🔴 ${at("st_live",{r:S.cur+1,n:S.rounds.length})}</div></div>`;
+  else if(st==="done"){const rows=standings();const w=rows[0];top=`<div class="ev cd"><div class="cdl">${at("st_done")}</div>${w?`<div class="when">🏆 ${at("winner")}: ${nm(w.id)}</div>`:""}</div>`;}
+  else top=`<div class="ev cd"><div id="cdown">${cdHtml()}</div>${e.date?`<div class="when">${fmtDate(e.date)}${e.start?" · "+e.start+(e.end?" – "+e.end:""):""}${e.meet?" · "+it("meet")+" "+e.meet:""}</div>`:""}</div>`;
+  const regd=Object.keys(REG).length;
+  return `<div class="intro"><h2 class="ttl">${esc(e.title||at("untitled"))}</h2>${top}
+  ${st==="before"?`<div class="when2">${at("players_n",{a:regd,b:S.n})}</div>`:""}
+  ${cs.length?`<div class="lbl">${it("courts")}</div><div class="ev">${cs.map(c=>`<div class="crt"><b>${c.num?"№"+esc(c.num):""}</b><span>${esc(c.name)}</span>${mem&&c.code?`<code>${it("code")} ${esc(c.code)}</code>`:""}</div>`).join("")}${mem?"":`<div class="when2">${at("codes_hidden")}</div>`}</div>`:""}
+  ${e.club||e.addr?`<div class="lbl push">${it("place")}</div><div class="ev"><div class="big">${esc(e.club)}</div><div>${esc(e.addr)}</div>${mapsLinks(e)}</div>`:`<div class="push"></div>`}
+  ${toolsRow()}
   <div class="by">Padelio <b>by Tectiva</b></div></div>`;}
+function myCard(x){const st=x.finished?"done":(x.phase==="play"?"live":"before");return `<button class="mycard" data-act="opent" data-v="${esc(x.code)}"><div class="mc-top"><b>${esc(x.title||at("untitled"))}</b><span class="mc-role">${x.role==="org"?at("role_org"):at("role_pl")}</span></div><div class="mc-sub">${st==="live"?"🔴 LIVE · ":""}${x.date?fmtDate(x.date):""}${x.start?" · "+esc(x.start):""}${x.club?" · "+esc(x.club):""}</div></button>`;}
+function vHome(){const m=AUTHON()&&window.PAUTH.isMember();
+  if(!m){return `<div class="home"><div class="hero"><div class="hero-mark">${typeof emblem==="function"?emblem(84):""}</div><h2>${at("about_t")}</h2><p>${at("about_1")}</p><p>${at("about_2")}</p><p>${at("about_3")}</p></div>
+    <div class="hbtns"><button class="btn pri big" data-act="acct">${at("go_in")}</button><button class="btn" data-act="homereg">${at("register")}</button></div><div class="by">Padelio <b>by Tectiva</b></div></div>`;}
+  const today=new Date().toISOString().slice(0,10);
+  const live=MY.filter(x=>!x.finished&&x.phase==="play");
+  const up=MY.filter(x=>!x.finished&&x.phase!=="play"&&(!x.date||x.date>=today)).sort((a,b)=>(a.date||"9").localeCompare(b.date||"9"));
+  const hist=MY.filter(x=>x.finished||(x.phase!=="play"&&x.date&&x.date<today)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  return `<div class="home">${live.length?`<div class="lbl">${at("live_now")}</div>${live.map(myCard).join("")}`:""}
+  <div class="lbl">${at("upcoming")}</div>${up.length?up.map(myCard).join(""):`<p class="hint">${at("none_up")}</p>`}
+  <button class="btn pri big" data-act="newtour" style="width:100%;margin:6px 0 4px">${at("create")}</button>
+  <div class="lbl">${at("history")}</div>${hist.length?hist.map(myCard).join(""):`<p class="hint">${at("none_hist")}</p>`}
+  <div class="by">Padelio <b>by Tectiva</b></div></div>`;}
+function vOrgs(){if(!AUTHON()||!isOrg())return "";const o=S.orgs||[];const regs=Object.entries(REG).filter(([,r])=>r&&r.uid);
+  return `<div class="lbl">${at("orgs_t")}</div><p class="hint">${at("orgs_h")}</p>${regs.length?regs.map(([pid,r])=>{const on=o.includes(r.uid)||S.owner===r.uid;return `<div class="row orgrow"><span>${nm(pid)}${S.owner===r.uid?` · <small>${at("owner")}</small>`:""}</span>${S.owner===r.uid?"":`<button class="btn sm" data-act="${on?"orgrm":"orgadd"}" data-v="${esc(r.uid)}">${on?at("remove"):at("add")}</button>`}</div>`;}).join(""):`<p class="hint">${at("orgs_none")}</p>`}`;}
 const AT={
 ru:{login:"Вход",register:"Регистрация",email:"Email",pass:"Пароль",name:"Имя",nick:"Прозвище",hint:"Подсказка к паролю (необязательно)",hint_note:"Подсказка хранится только на этом телефоне.",
 remember:"Запомнить меня",go_in:"Войти",go_reg:"Создать аккаунт",forgot:"Не помню пароль",google:"Войти через Google",or:"или",have:"Уже есть аккаунт? Войти",noacc:"Нет аккаунта? Регистрация",
@@ -906,7 +961,13 @@ need:"Войди, чтобы ставить счёт и менять турни�
 spam:"Нет письма? Проверь папку «Спам».",iverified:"Я подтвердил",resend:"Отправить письмо ещё раз",change:"Другой email",sent:"Письмо отправлено.",notyet:"Пока не подтверждено. Нажми ссылку в письме.",
 forgot_t:"Восстановление пароля",reset_btn:"Прислать ссылку для сброса",reset_ok:"Ссылка для сброса отправлена на {e}.",show_hint:"Показать подсказку",no_hint:"Подсказки на этом телефоне нет. Сбрось пароль по ссылке.",your_hint:"Подсказка: {h}",
 back:"Назад",profile:"Профиль",photo:"Фото",save:"Сохранить",saved:"Сохранено",out:"Выйти",verified:"email подтверждён",unverified:"email не подтверждён",
-copy:"⧉ Копировать ссылку",copied:"Ссылка скопирована",acct_in:"👤 Войти",acct_me:"👤 Профиль",theme_m:"Оформление",th_auto:"Авто",th_light:"Светлое",th_dark:"Тёмное",
+copy:"⧉ Копировать ссылку",copied:"Ссылка скопирована",
+about_t:"Турниры по паделу — в одном приложении",about_1:"Собери компанию и проведи турнир: Americano, Mexicano, King of the Court или постоянные пары.",about_2:"Жеребьёвка, таймер, счёт и таблица — вживую у всех на телефонах.",about_3:"Свой профиль, аватарка бойца и история твоих турниров.",
+live_now:"Идёт сейчас",upcoming:"Мои ближайшие турниры",history:"История моих турниров",create:"＋ Создать турнир",none_up:"Ближайших турниров пока нет.",none_hist:"Здесь появятся турниры, в которых ты играл.",
+role_org:"Организатор",role_pl:"Игрок",untitled:"Турнир без названия",not_found:"Турнир не найден. Проверь ссылку.",my_t:"← Мои турниры",org_only:"Это может только организатор.",
+ev_step:"Событие",ev_title:"Название турнира",ev_date:"Дата",ev_start:"Начало",ev_end:"Конец",ev_meet:"Сбор",ev_club:"Клуб",ev_addr:"Адрес",ev_courts:"Корты",ev_num:"№",ev_cname:"Название",ev_code:"Код входа",ev_h:"Это увидят игроки на странице турнира. Коды кортов видят только вошедшие.",
+st_live:"LIVE · раунд {r} из {n}",st_done:"Турнир завершён",winner:"Победитель",results:"Итоги",players_n:"Записано: {a} из {b}",codes_hidden:"Коды кортов видны после входа.",
+orgs_t:"Организаторы",orgs_h:"Добавь соорганизаторов из бойцов, которые зарегистрировались в турнире.",orgs_none:"Пока никто из бойцов не зарегистрировался со своим аккаунтом.",owner:"создатель",add:"Добавить",remove:"Убрать",acct_in:"👤 Войти",acct_me:"👤 Профиль",theme_m:"Оформление",th_auto:"Авто",th_light:"Светлое",th_dark:"Тёмное",
 e_inuse:"Этот email уже зарегистрирован — войди.",e_mail:"Проверь email — похоже, опечатка.",e_weak:"Пароль слишком короткий — нужно от 6 символов.",e_cred:"Неверный email или пароль.",e_many:"Слишком много попыток. Подожди пару минут.",e_net:"Нет связи. Проверь интернет.",e_pop:"Окно входа закрыто.",e_gen:"Не получилось: {c}",e_empty:"Заполни email и пароль.",show:"показать",hide:"скрыть"},
 en:{login:"Sign in",register:"Sign up",email:"Email",pass:"Password",name:"Name",nick:"Nickname",hint:"Password hint (optional)",hint_note:"The hint stays on this phone only.",
 remember:"Remember me",go_in:"Sign in",go_reg:"Create account",forgot:"Forgot password",google:"Sign in with Google",or:"or",have:"Have an account? Sign in",noacc:"No account? Sign up",
@@ -914,7 +975,13 @@ need:"Sign in to enter scores and change the tournament. Watching works without 
 spam:"No email? Check your Spam folder.",iverified:"I've confirmed",resend:"Send again",change:"Use another email",sent:"Email sent.",notyet:"Not confirmed yet. Tap the link in the email.",
 forgot_t:"Reset password",reset_btn:"Send reset link",reset_ok:"A reset link was sent to {e}.",show_hint:"Show hint",no_hint:"No hint on this phone. Reset the password by link.",your_hint:"Hint: {h}",
 back:"Back",profile:"Profile",photo:"Photo",save:"Save",saved:"Saved",out:"Sign out",verified:"email confirmed",unverified:"email not confirmed",
-copy:"⧉ Copy link",copied:"Link copied",acct_in:"👤 Sign in",acct_me:"👤 Profile",theme_m:"Appearance",th_auto:"Auto",th_light:"Light",th_dark:"Dark",
+copy:"⧉ Copy link",copied:"Link copied",
+about_t:"Padel tournaments in one app",about_1:"Gather your crew and run a tournament: Americano, Mexicano, King of the Court or fixed pairs.",about_2:"Draw, timer, score and standings — live on everyone's phone.",about_3:"Your profile, fighter avatar and the history of your tournaments.",
+live_now:"Live now",upcoming:"My upcoming tournaments",history:"My tournament history",create:"＋ Create tournament",none_up:"No upcoming tournaments yet.",none_hist:"Tournaments you played will appear here.",
+role_org:"Organizer",role_pl:"Player",untitled:"Untitled tournament",not_found:"Tournament not found. Check the link.",my_t:"← My tournaments",org_only:"Only the organizer can do this.",
+ev_step:"Event",ev_title:"Tournament name",ev_date:"Date",ev_start:"Start",ev_end:"End",ev_meet:"Meet",ev_club:"Club",ev_addr:"Address",ev_courts:"Courts",ev_num:"No.",ev_cname:"Name",ev_code:"Door code",ev_h:"Players see this on the tournament page. Court codes are shown only to signed-in players.",
+st_live:"LIVE · round {r} of {n}",st_done:"Tournament finished",winner:"Winner",results:"Results",players_n:"Signed up: {a} of {b}",codes_hidden:"Court codes are visible after signing in.",
+orgs_t:"Organizers",orgs_h:"Add co-organizers from fighters who registered in this tournament.",orgs_none:"No fighter has registered with an account yet.",owner:"creator",add:"Add",remove:"Remove",acct_in:"👤 Sign in",acct_me:"👤 Profile",theme_m:"Appearance",th_auto:"Auto",th_light:"Light",th_dark:"Dark",
 e_inuse:"This email is already registered — sign in.",e_mail:"Check the email — looks like a typo.",e_weak:"Password too short — 6 characters or more.",e_cred:"Wrong email or password.",e_many:"Too many attempts. Wait a couple of minutes.",e_net:"No connection. Check the internet.",e_pop:"Sign-in window closed.",e_gen:"Something went wrong: {c}",e_empty:"Fill in email and password.",show:"show",hide:"hide"},
 et:{login:"Sisene",register:"Registreeru",email:"E-post",pass:"Parool",name:"Nimi",nick:"Hüüdnimi",hint:"Parooli vihje (valikuline)",hint_note:"Vihje jääb ainult sellesse telefoni.",
 remember:"Jäta mind meelde",go_in:"Sisene",go_reg:"Loo konto",forgot:"Unustasin parooli",google:"Sisene Google'iga",or:"või",have:"Konto on olemas? Sisene",noacc:"Kontot pole? Registreeru",
@@ -922,12 +989,33 @@ need:"Sisene, et tulemusi sisestada ja turniiri muuta. Vaadata saab ka sisenemat
 spam:"Kirja pole? Vaata rämpsposti.",iverified:"Kinnitasin",resend:"Saada uuesti",change:"Teine e-post",sent:"Kiri saadetud.",notyet:"Pole veel kinnitatud. Vajuta kirjas olevat linki.",
 forgot_t:"Parooli taastamine",reset_btn:"Saada taastamislink",reset_ok:"Taastamislink saadeti aadressile {e}.",show_hint:"Näita vihjet",no_hint:"Selles telefonis vihjet pole. Taasta parool lingiga.",your_hint:"Vihje: {h}",
 back:"Tagasi",profile:"Profiil",photo:"Foto",save:"Salvesta",saved:"Salvestatud",out:"Logi välja",verified:"e-post kinnitatud",unverified:"e-post kinnitamata",
-copy:"⧉ Kopeeri link",copied:"Link kopeeritud",acct_in:"👤 Sisene",acct_me:"👤 Profiil",theme_m:"Kujundus",th_auto:"Auto",th_light:"Hele",th_dark:"Tume",
+copy:"⧉ Kopeeri link",copied:"Link kopeeritud",
+about_t:"Padeliturniirid ühes rakenduses",about_1:"Kogu seltskond kokku ja korralda turniir: Americano, Mexicano, King of the Court või püsipaarid.",about_2:"Loosimine, taimer, skoor ja tabel — reaalajas kõigi telefonis.",about_3:"Oma profiil, võitleja avatar ja sinu turniiride ajalugu.",
+live_now:"Käib praegu",upcoming:"Minu tulevased turniirid",history:"Minu turniiride ajalugu",create:"＋ Loo turniir",none_up:"Tulevasi turniire veel pole.",none_hist:"Siia ilmuvad turniirid, kus mängisid.",
+role_org:"Korraldaja",role_pl:"Mängija",untitled:"Nimetu turniir",not_found:"Turniiri ei leitud. Kontrolli linki.",my_t:"← Minu turniirid",org_only:"Seda saab teha ainult korraldaja.",
+ev_step:"Sündmus",ev_title:"Turniiri nimi",ev_date:"Kuupäev",ev_start:"Algus",ev_end:"Lõpp",ev_meet:"Kogunemine",ev_club:"Klubi",ev_addr:"Aadress",ev_courts:"Väljakud",ev_num:"Nr",ev_cname:"Nimi",ev_code:"Uksekood",ev_h:"Mängijad näevad seda turniiri lehel. Väljakute koode näevad ainult sisse loginud.",
+st_live:"LIVE · voor {r}/{n}",st_done:"Turniir on lõppenud",winner:"Võitja",results:"Tulemused",players_n:"Registreerunud: {a}/{b}",codes_hidden:"Väljakute koodid on nähtavad pärast sisselogimist.",
+orgs_t:"Korraldajad",orgs_h:"Lisa kaaskorraldajad turniiril registreerunud võitlejate seast.",orgs_none:"Ükski võitleja pole veel oma kontoga registreerunud.",owner:"looja",add:"Lisa",remove:"Eemalda",acct_in:"👤 Sisene",acct_me:"👤 Profiil",theme_m:"Kujundus",th_auto:"Auto",th_light:"Hele",th_dark:"Tume",
 e_inuse:"See e-post on juba registreeritud — sisene.",e_mail:"Kontrolli e-posti — tundub kirjaviga.",e_weak:"Parool on liiga lühike — vähemalt 6 märki.",e_cred:"Vale e-post või parool.",e_many:"Liiga palju katseid. Oota paar minutit.",e_net:"Ühendus puudub.",e_pop:"Sisenemisaken suleti.",e_gen:"Ei õnnestunud: {c}",e_empty:"Täida e-post ja parool.",show:"näita",hide:"peida"}};
 function at(k,v){let x=(AT[S.lang]||AT.ru)[k];if(x===undefined)x=AT.ru[k]||k;if(v)for(const q in v)x=x.split("{"+q+"}").join(v[q]);return x;}
 const AUTHON=()=>!!window.PAUTH&&!LOCAL;
 const ME=()=>window.PAUTH?window.PAUTH.user():null;
 function canWrite(){return !AUTHON()||window.PAUTH.isMember();}
+function isOrg(){if(!AUTHON())return true;if(!window.PAUTH.isMember())return false;const o=S.orgs||[];if(!S.owner&&!o.length)return true;return o.includes(UID)||S.owner===UID;}
+const PLAYER_ACTS=new Set(["sinc","pick","pickv","pickclose","lrswap","tstart","tpause","treset","next","goround","reg","rsave","regskip","rg","ragree","selfie","prompt","cyes","cno","paid"]);
+const MODE=window.HASCODE===false?"home":"t";
+let MY=[],myUnsub=null,NOTFOUND=false;
+function rndCode(){const A="abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";const a=new Uint32Array(10);crypto.getRandomValues(a);return Array.from(a,x=>A[x%A.length]).join("");}
+function initials(n){return String(n||"").trim().split(/\s+/).filter(Boolean).map(w=>w[0].toUpperCase()).join("").slice(0,3)||"?";}
+function evDef(){return {title:"",date:"",start:"",end:"",meet:"",club:"",addr:"",courts:[]};}
+function EV(){return Object.assign(evDef(),S.event||{});}
+function evTimes(){const e=EV();if(!e.date)return null;const p=x=>x?Date.parse(e.date+"T"+x+":00"):NaN;const st=p(e.start||"00:00");return {start:st,end:isNaN(p(e.end))?st+3*3600000:p(e.end),meet:isNaN(p(e.meet))?null:p(e.meet)};}
+function fmtDate(d){if(!d)return "";const [y,m,dd]=d.split("-");return dd+"."+m+"."+y;}
+function evState(){if(S.finished)return "done";if(S.phase==="play"&&S.rounds.length)return "live";return "before";}
+function myEntry(){const e=EV();return {title:e.title||"",date:e.date||"",start:e.start||"",club:e.club||"",phase:S.phase,finished:!!S.finished,ts:Date.now()};}
+function syncMy(){if(!AUTHON()||!window.PAUTH.isMember()||MODE!=="t"||BOOT||NOTFOUND)return;const o=S.orgs||[];let role=null;if(S.owner===UID||o.includes(UID))role="org";else if(Object.values(REG).some(r=>r&&r.uid===UID))role="player";if(!role)return;const m=myEntry();m.role=role;const key=JSON.stringify(m).replace(/"ts":\d+/,"");if(syncMy.last===key)return;syncMy.last=key;window.PAUTH.setMy(window.TCODE,m).catch(()=>{});}
+function evSet(k,v){S.event=EV();S.event[k]=v;save();}
+function evCourtsSync(){const e=EV();const n=nC();const c=(e.courts||[]).slice(0,n);while(c.length<n)c.push({num:"",name:"",code:""});S.event=Object.assign(e,{courts:c});c.forEach((x,i)=>{if(S.courts[i])S.courts[i].name=[x.num?"№"+x.num:"",x.name].filter(Boolean).join(" ");});}
 let AUTHV=null,PROF=null,profUnsub=null,AUTHBUSY=false;
 function openAuth(mode,msg){AUTHV={mode:mode||"login",msg:msg||"",err:"",ok:"",email:(AUTHV&&AUTHV.email)||"",remember:true,show:false};renderLayer();}
 function authErr(e){const c=(e&&e.code)||"";const m={"auth/email-already-in-use":"e_inuse","auth/credential-already-in-use":"e_inuse","auth/invalid-email":"e_mail","auth/weak-password":"e_weak","auth/wrong-password":"e_cred","auth/invalid-credential":"e_cred","auth/user-not-found":"e_cred","auth/invalid-login-credentials":"e_cred","auth/too-many-requests":"e_many","auth/network-request-failed":"e_net","auth/popup-closed-by-user":"e_pop","auth/cancelled-popup-request":"e_pop"}[c];return m?at(m):at("e_gen",{c:c||String(e&&e.message||e)});}
@@ -938,13 +1026,13 @@ function authSheet(){const v=AUTHV,u=ME();let b="";
   const head=(title)=>`<div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h1 style="font-size:20px;margin:0">${title}</h1><button class="btn sm ghost" data-act="authclose" aria-label="Close">✕</button></div>`;
   const msg=(v.msg?`<p class="note">${esc(v.msg)}</p>`:"")+(v.err?`<p class="err">${esc(v.err)}</p>`:"")+(v.ok?`<p class="ok">${esc(v.ok)}</p>`:"");
   const pw=(id,ac)=>`<div class="pw"><input type="${v.show?"text":"password"}" id="${id}" autocomplete="${ac}" minlength="6"><button type="button" data-act="aushow">${v.show?at("hide"):at("show")}</button></div>`;
-  const rem=`<button class="check ${v.remember?"on":""}" data-act="aurem" style="margin-top:0"><i>${v.remember?"✓":""}</i>${at("remember")}</button>`;
-  const gbtn=`<div class="or">${at("or")}</div><button class="gbtn2" data-act="augoogle">${GICON}${at("google")}</button>`;
-  if(v.mode==="login"){b=head(at("login"))+`<div class="au">${msg}<div class="lbl">${at("email")}</div><input type="email" id="au_email" autocomplete="email" value="${esc(v.email)}"><div class="lbl">${at("pass")}</div>${pw("au_pass","current-password")}${rem}
-    <button class="btn pri big" data-act="auin">${at("go_in")}</button><button class="lnk" data-act="aumode" data-v="forgot">${at("forgot")}</button>${gbtn}<button class="btn" data-act="aumode" data-v="register">${at("noacc")}</button></div>`;}
-  else if(v.mode==="register"){b=head(at("register"))+`<div class="au">${msg}<div class="lbl">${at("name")}</div><input type="text" id="au_name" autocomplete="name"><div class="lbl">${at("email")}</div><input type="email" id="au_email" autocomplete="email" value="${esc(v.email)}"><div class="lbl">${at("pass")}</div>${pw("au_pass","new-password")}
+  const rem=`<button type="button" class="check ${v.remember?"on":""}" data-act="aurem" style="margin-top:0"><i>${v.remember?"✓":""}</i>${at("remember")}</button>`;
+  const gbtn=`<div class="or">${at("or")}</div><button type="button" class="gbtn2" data-act="augoogle">${GICON}${at("google")}</button>`;
+  if(v.mode==="login"){b=head(at("login"))+`<form class="au" data-sub="auin" autocomplete="on">${msg}<div class="lbl">${at("email")}</div><input type="email" id="au_email" autocomplete="email" value="${esc(v.email)}"><div class="lbl">${at("pass")}</div>${pw("au_pass","current-password")}${rem}
+    <button class="btn pri big" type="submit">${at("go_in")}</button><button type="button" class="lnk" data-act="aumode" data-v="forgot">${at("forgot")}</button>${gbtn}<button type="button" class="btn" data-act="aumode" data-v="register">${at("noacc")}</button></form>`;}
+  else if(v.mode==="register"){b=head(at("register"))+`<form class="au" data-sub="aureg" autocomplete="on">${msg}<div class="lbl">${at("name")}</div><input type="text" id="au_name" autocomplete="name"><div class="lbl">${at("email")}</div><input type="email" id="au_email" autocomplete="email" value="${esc(v.email)}"><div class="lbl">${at("pass")}</div>${pw("au_pass","new-password")}
     <div class="lbl">${at("hint")}</div><input type="text" id="au_hint" autocomplete="off"><p class="note">${at("hint_note")}</p>${rem}
-    <button class="btn pri big" data-act="aureg">${at("go_reg")}</button>${gbtn}<button class="btn" data-act="aumode" data-v="login">${at("have")}</button></div>`;}
+    <button class="btn pri big" type="submit">${at("go_reg")}</button>${gbtn}<button type="button" class="btn" data-act="aumode" data-v="login">${at("have")}</button></form>`;}
   else if(v.mode==="verify"){const e=(u&&u.email)||v.email;b=head(at("verify_t"))+`<div class="au">${msg}<p>${esc(at("verify_n",{e:e}))}</p><p class="note">${at("spam")}</p>
     <button class="btn pri big" data-act="auverified">${at("iverified")}</button><button class="btn" data-act="auresend">${at("resend")}</button><button class="lnk" data-act="auchange">${at("change")}</button></div>`;}
   else if(v.mode==="forgot"){b=head(at("forgot_t"))+`<div class="au">${msg}<div class="lbl">${at("email")}</div><input type="email" id="au_email" autocomplete="email" value="${esc(v.email)}">
@@ -994,6 +1082,7 @@ function render(){
   if(BOOT){content.innerHTML=`<div class="loading">LOADING…</div>`;$("#top").innerHTML=top();$("#bottom").innerHTML="";return;}
   const keep=content.scrollTop;
   $("#top").innerHTML=top();
+  if(MODE==="home"){content.innerHTML=vHome();$("#bottom").innerHTML="";renderLayer();return;}
   if(INTRO){content.innerHTML=vIntro();{const cs=getComputedStyle(content),el=content.querySelector(".intro");if(el){el.style.zoom="";el.style.minHeight=(content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))+"px";if(content.scrollHeight>content.clientHeight+1){el.style.minHeight="";const k=Math.max(.6,(content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))/el.scrollHeight);el.style.zoom=k;el.style.minHeight=((content.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))/k)+"px";}}}$("#bottom").innerHTML=`<div class="foot"><button class="btn pri big gobtn" data-act="intro">${swords()}<span>${it("go")}</span>${swords()}</button></div>`;content.scrollTop=0;renderLayer();return;}
   if(S.phase==="play"&&S.rounds.length){
     if(lastCur!==null&&S.cur!==lastCur){lastCur=S.cur;showOverlay(false);}lastCur=S.cur;
@@ -1001,7 +1090,7 @@ function render(){
     $("#bottom").innerHTML=tabsBar();
   }else{
     step=Math.min(Math.max(step,0),STEPS.length-1);
-    content.innerHTML=(STEPS[step]!=="photos"&&!RO?`<button class="btn" data-act="gostep" data-v="2" style="width:100%;margin-bottom:12px;font-size:16px;min-height:52px">🥋 ${t("reg_btn")}</button>`:"")+`<div class="stepno">${t("step",{a:step+1,b:STEPS.length})}</div><div class="prog">${STEPS.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join("")}</div>`+({count:vCount,names:vNames,photos:vPhotos,format:vFormat,scoring:vScoring,mix:vMix,theme:vTheme,summary:vSummary}[STEPS[step]])();
+    content.innerHTML=(STEPS[step]!=="photos"&&!RO?`<button class="btn" data-act="gostep" data-v="${STEPS.indexOf("photos")}" style="width:100%;margin-bottom:12px;font-size:16px;min-height:52px">🥋 ${t("reg_btn")}</button>`:"")+`<div class="stepno">${t("step",{a:step+1,b:STEPS.length})}</div><div class="prog">${STEPS.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join("")}</div>`+({count:vCount,event:vEvent,names:vNames,photos:vPhotos,format:vFormat,scoring:vScoring,mix:vMix,theme:vTheme,summary:vSummary}[STEPS[step]])();
     $("#bottom").innerHTML=`<div class="foot">${step>0?`<button class="btn ghost" data-act="step" data-d="-1">← ${t("back")}</button>`:`<button class="btn ghost" data-act="home">← ${t("back")}</button>`}${step<STEPS.length-1?`<button class="btn pri big" data-act="step" data-d="1">${t("next")} →</button>`:(RO?"":`<button class="btn pri big" data-act="fight">${t("fight")}</button>`)}</div>`;
   }
   content.scrollTop=keep;
@@ -1077,8 +1166,6 @@ function vMix(){
 function vTheme(){
   const sw={immortal:["#0a0705","#e3a83c","#ff8a1f"],"immortal-blood":["#0b0304","#c9ced8","#e8202a"],"immortal-ember":["#07090d","#f08a3e","#1c2632"],"immortal-royal":["#09060f","#e8be5a","#d6286e"],arcade:["#0d0809","#ff5a1f","#ffcf3a"],neon:["#0a0717","#ff2fb4","#2ff3ff"],club:["#09150f","#c8ff3d","#ffffff"]};
   return `<h1>${t("s_theme")}</h1><div class="tiles">${THEMES.map(th=>`<button class="tile ${S.theme===th?"on":""}" data-act="theme" data-v="${th}" ${dis()}><div class="row" style="gap:12px;flex-wrap:nowrap"><span style="display:flex;flex:none">${sw[th].map(c=>`<i style="display:block;width:22px;height:40px;background:${c};border:1px solid rgba(255,255,255,.15)"></i>`).join("")}</span><span style="min-width:0"><h3>${t("th_"+th)}</h3><p>${t("td_"+th)}</p></span></div></button>`).join("")}</div>
-  <div class="lbl">${at("theme_m")}</div><div class="seg" style="grid-template-columns:1fr 1fr 1fr">${["auto","light","dark"].map(m=>`<button class="${themeMode()===m?"on":""}" data-act="thmode" data-v="${m}">${at("th_"+m)}</button>`).join("")}</div>
-  <div class="set" style="margin-top:12px"><button class="btn" data-act="copylink">${at("copy")}</button>${AUTHON()?`<button class="btn" data-act="acct">${window.PAUTH.isMember()?at("acct_me"):at("acct_in")}</button>`:""}</div>
   <button class="check ${S.sound?"on":""}" data-act="sound" ${dis()}><i>${S.sound?"✓":""}</i>${t("sound")}</button>`;
 }
 function vSummary(){
@@ -1148,6 +1235,9 @@ function vMoney(){
 function vMore(){
   return `<h1>${t("more_t")}</h1>
   <div class="lbl">${t("theme")}</div><div class="seg" style="grid-template-columns:1fr 1fr;grid-auto-flow:row">${THEMES.map(th=>`<button class="${S.theme===th?"on":""}" data-act="theme" data-v="${th}" ${dis()}>${t("th_"+th)}</button>`).join("")}</div>
+  <div class="lbl">${at("theme_m")}</div><div class="seg" style="grid-template-columns:1fr 1fr 1fr">${["auto","light","dark"].map(m=>`<button class="${themeMode()===m?"on":""}" data-act="thmode" data-v="${m}">${at("th_"+m)}</button>`).join("")}</div>
+  ${vOrgs()}
+  <div class="set" style="margin-top:12px"><button class="btn" data-act="copylink">${at("copy")}</button>${AUTHON()?`<button class="btn" data-act="acct">${window.PAUTH.isMember()?at("acct_me"):at("acct_in")}</button>`:""}</div>
   <button class="check ${S.sound?"on":""}" data-act="sound" ${dis()}><i>${S.sound?"✓":""}</i>${t("sound")}</button>
   ${RO?`<p class="hint" style="margin-top:14px">${t("ro_note")}</p>`:`<button class="btn pri big" style="width:100%;margin-top:18px" data-act="${S.finished?"resume":"finnow"}">${S.finished?it("resume"):it("fin")}</button><div class="set" style="margin-top:12px"><button class="btn" data-act="home">${it("home")}</button><button class="btn" data-act="edit">${t("edit")}</button><button class="btn danger" data-act="ask" data-what="resetres">${t("reset_res")}</button><button class="btn danger" data-act="ask" data-what="newt">${t("new_t")}</button></div>`}
   ${LOCAL?`<p class="hint" style="margin-top:14px">${t("local_note")}</p>`:""}`;
@@ -1233,14 +1323,20 @@ function setScore(c,side,val){
   writeScore(key,v,au);
 }
 function autoNext(){if(S.phase==="play")return;const at=step;setTimeout(()=>{if(step===at&&step<STEPS.length-1){step++;ls.set("pfn_step",String(step));render();$("#content").scrollTop=0;}},320);}
-const VIEW_ACTS=new Set(["tab","ovclose","allr","home","intro","pickclose","cno","regclose","copylink","thmode","acct","step","gostep","lang"]);
+const VIEW_ACTS=new Set(["mytour","opent","homereg","tab","ovclose","allr","home","intro","pickclose","cno","regclose","copylink","thmode","acct","step","gostep","lang"]);
 function act(a,d,el){
   if(a.startsWith("au")||a==="authclose"){authAct(a,d);return;}
   if(a==="acct"){if(window.PAUTH&&window.PAUTH.isMember()){openAuth("profile");}else{const u=ME();openAuth(u&&!u.isAnonymous?"verify":"login");}return;}
   if(a==="copylink"){copyLink();return;}
   if(a==="thmode"){try{localStorage.setItem("pfn_theme",d.v);}catch(e){}applyTheme();render();return;}
   if(a==="lang"){S.lang=d.v;try{localStorage.setItem("pfn_lang",d.v);}catch(e){}if(window.PAUTH)window.PAUTH.lang(d.v);render();renderLayer();return;}
+  if(a==="mytour"){location.href=location.pathname;return;}
+  if(a==="homereg"){openAuth("register");return;}
+  if(a==="newtour"){if(!canWrite()){openAuth("login",at("need"));return;}const c=rndCode();window.PAUTH.setMy(c,{role:"org",title:"",phase:"setup",finished:false,ts:Date.now()}).finally(()=>{location.href=location.pathname+"?t="+c+"&new=1";});return;}
+  if(a==="opent"){location.href=location.pathname+"?t="+encodeURIComponent(d.v);return;}
   if(!VIEW_ACTS.has(a)&&!canWrite()){const u=ME();openAuth(u&&!u.isAnonymous?"verify":"login",at("need"));return;}
+  if(!VIEW_ACTS.has(a)&&!PLAYER_ACTS.has(a)&&!a.startsWith("org")&&!isOrg()){toast(at("org_only"));return;}
+  if(a==="orgadd"||a==="orgrm"){if(!isOrg())return;const o=(S.orgs||[]).slice();if(a==="orgadd"&&!o.includes(d.v))o.push(d.v);if(a==="orgrm"&&d.v!==S.owner){const i=o.indexOf(d.v);if(i>=0)o.splice(i,1);}S.orgs=o;save();render();return;}
   if(a==="tab"){tab=d.v;render();$("#content").scrollTop=0;return;}
   if(a==="goround"){S.cur=+d.r;lastCur=S.cur;save();render();return;}
   if(a==="ovclose"){ovShow=false;clearTimeout(ovT);renderLayer();return;}
@@ -1256,7 +1352,7 @@ function act(a,d,el){
     if(a==="selfie"){photoFor=regFor;const f=$("#file");f.setAttribute("capture","user");f.value="";f.click();return;}
     if(a==="regskip"){savePhoto(regFor,null);renderLayer();render();return;}
     if(a==="rsave"){if(!regDraft.agree){toast(t("reg_need"));return;}const id=regFor;
-      REG[id]={name:regDraft.name.trim(),nick:regDraft.nick.trim(),g:regDraft.g,agree:true,by:UID||null,at:Date.now()};
+      REG[id]={name:regDraft.name.trim(),nick:regDraft.nick.trim(),g:regDraft.g,agree:true,by:UID||null,uid:UID||null,at:Date.now()};setTimeout(syncMy,300);
       dbWrite("reg",id,REG[id]);regFor=null;regDraft=null;renderLayer();render();return;}
   }
   if(a==="cno"){confirmBox=null;renderLayer();return;}
@@ -1319,17 +1415,21 @@ function act(a,d,el){
 }
 function fightSfxShort(){if(!S.sound)return;const a=ac();if(!a)return;const t0=a.currentTime;const o=a.createOscillator(),v=a.createGain();o.type="square";o.frequency.setValueAtTime(880,t0);v.gain.setValueAtTime(.12,t0);v.gain.exponentialRampToValueAtTime(.001,t0+.25);o.connect(v);v.connect(a.destination);o.start(t0);o.stop(t0+.3);}
 
-document.addEventListener("click",e=>{if(Date.now()<blockUntil){e.preventDefault();return;}let el=e.target.closest("[data-act],[data-stop]");if(el&&el.dataset.stop&&!e.target.closest("[data-act]"))return;el=e.target.closest("[data-act]");if(!el||el.disabled)return;ac();act(el.dataset.act,el.dataset,el);});
+document.addEventListener("click",e=>{if(Date.now()<blockUntil){e.preventDefault();return;}const stp=e.target.closest("[data-stop]");let el=e.target.closest("[data-act]");if(stp&&(!el||el.contains(stp)))return;if(!el||el.disabled)return;ac();act(el.dataset.act,el.dataset,el);});
+document.addEventListener("submit",e=>{const f=e.target;if(f&&f.dataset&&f.dataset.sub){e.preventDefault();authAct(f.dataset.sub,{});}});
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches("span[data-act]")){e.preventDefault();e.target.click();}});
 let inT=null;
 document.addEventListener("input",e=>{const el=e.target,k=el.dataset&&el.dataset.in;if(!k){if(el.id==="paste")pasteText=el.value;return;}if(RO)return;if(!canWrite()){openAuth("login",at("need"));return;}
+  if(!["rname","rnick","score"].includes(k)&&!isOrg()){toast(at("org_only"));return;}
+  if(k==="ev"){evSet(el.dataset.k,el.value);return;}
+  if(k==="evc"){S.event=EV();evCourtsSync();const c=S.event.courts[+el.dataset.i];if(c){c[el.dataset.f]=el.value;evCourtsSync();save();}return;}
   if(k==="rname"&&regDraft){regDraft.name=el.value;return;}
   if(k==="rnick"&&regDraft){regDraft.nick=el.value;return;}
   if(k==="name"||k==="nick"){Pb(el.dataset.id)[k]=el.value;save();return;}
   if(k==="court"){S.courts[+el.dataset.i].name=el.value;save();return;}
   if(k==="mtotal"){S.money.total=parseFloat(String(el.value).replace(",","."))||0;save();clearTimeout(inT);inT=setTimeout(()=>{if(document.activeElement!==el)render();},600);return;}
 });
-document.addEventListener("change",e=>{const el=e.target,k=el.dataset&&el.dataset.in;if(!k||RO)return;if(!canWrite()){openAuth("login",at("need"));render();return;}
+document.addEventListener("change",e=>{const el=e.target,k=el.dataset&&el.dataset.in;if(!k||RO)return;if(!canWrite()){openAuth("login",at("need"));render();return;}if(!["score","rname","rnick"].includes(k)&&!isOrg()){render();return;}
   if(k==="score"){const v=el.value===""?null:+el.value;setScore(+el.dataset.c,+el.dataset.s,v);softRender();return;}
   if(k==="mpayer"){S.money.payer=el.value;save();render();return;}
   if(k==="mtotal"){render();return;}
@@ -1343,6 +1443,7 @@ document.documentElement.style.setProperty("--gri",`url("${IMG_GRI}")`);
 function fitFrame(){const d=document.getElementById("dev");if(!d)return;if(innerWidth>=760&&innerHeight>=700){const f=Math.min(1,(innerHeight-24)/896,(innerWidth-24)/424);d.style.setProperty("--fs",f.toFixed(3));}else d.style.removeProperty("--fs");}
 addEventListener("resize",fitFrame);fitFrame();
 applyTheme();{const LL=localLang();if(LL)S.lang=LL;}
+try{document.fonts&&document.fonts.ready.then(()=>{if(!BOOT)render();});}catch(e){}
 render();boot();
 })();
 </script>
