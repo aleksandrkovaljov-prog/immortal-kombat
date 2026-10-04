@@ -167,6 +167,15 @@ body:not(.notes) .device .mnote{display:none}
 .m-qrtimer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--m1),var(--m2))}
 .m-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .m-two .btn{min-width:0;white-space:nowrap;font-size:13px;letter-spacing:.04em;padding:12px 6px;display:flex;align-items:center;justify-content:center}
+.m-collhead{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:0;padding:0;cursor:pointer;color:inherit}
+.m-tri{color:var(--acc,#e6c25a);font-size:16px;line-height:1;transition:transform .2s}.m-tri.up{transform:rotate(180deg)}
+.m-qrcard .m-qrgrp{margin-top:10px}
+.m-qrcol{justify-content:space-between;align-items:stretch;text-align:center}
+.m-qrbtns{display:flex;flex-direction:column;gap:6px}
+.m-val,.m-addr{color:#ecdfbd}
+.m-card .lbl,.m-mapl{color:var(--acc,#e6c25a);opacity:1}
+.m-addr svg{color:var(--acc,#e6c25a);margin-left:-3px}
+.btn.sm.m-x{width:36px;height:36px;min-width:36px;min-height:36px;padding:0;display:grid;place-items:center;flex:none;font-size:14px;line-height:1}
 .m-cardrow .mc-top{flex-wrap:wrap;row-gap:2px}.m-cardrow .mc-top b{white-space:normal}
 .m-qrbtn{flex:none;width:52px;border-radius:12px;border:1px solid rgba(230,194,90,.45);background:linear-gradient(180deg,#121110,#070706);color:var(--m2);display:grid;place-items:center;cursor:pointer}
 .m-qrbtn svg{width:26px;height:26px}
@@ -250,17 +259,17 @@ const USERICON=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 
 let D,H=[],CUR="S01",SCEN="A",SHEET=null,LASTT=null;
 function fresh(){return {me:{name:"Sanja K",nick:"Griffin",email:"sanja@example.com"},loggedIn:false,regName:"",regEmail:"",regPass:"",showPass:false,remember:true,
-  role:null,mode:null,title:"",date:null,start:null,dur:null,gather:30,place:null,placeQ:"",courtNames:"",format:"americano",n:4,cap:"free",capN:16,courts:1,
+  role:null,mode:null,title:"",date:null,start:null,dur:null,gather:30,place:null,placeQ:"",courtNames:"",format:"americano",n:4,nT:false,calcN:4,qrOpen:false,cap:"free",capN:16,courts:1,
   raw:"",players:[],pairs:"mix",scoreMode:"list",draft:null,created:null,joinState:"none",joinOk:false,timeReached:false,round:1,scores:{},finished:false,history:[],calY:2026,calM:9};}
 D=fresh();
 
-function plan(){const n=D.n||(D.mode==="link"?12:0),need=Math.floor(n/4),used=Math.max(0,Math.min(D.courts,need));
+function plan(){const n=D.mode==="link"?(D.cap==="max"?D.capN:D.calcN):(D.n||0),need=Math.floor(n/4),used=Math.max(0,Math.min(D.courts,need));
   if(!n||!used)return {n,used,rounds:0,rest:0,min:0};
   const rounds=D.format==="americano"||D.format==="teams"?Math.ceil(n*(n-1)/4/used):Math.max(1,Math.floor((D.dur||150)/15));
   return {n,used,need,rounds,rest:n-used*4,min:rounds*15};}
-const hm=m=>`${Math.floor(m/60)} ч ${String(m%60).padStart(2,"0")} мин`;
+const hm=m=>{const h=Math.floor(m/60),r=m%60;return h&&r?`${h} ч ${r} мин`:h?`${h} ч`:`${r} мин`;};
 const plC=n=>n%10===1&&n%100!==11?"корт":(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20))?"корта":"кортов";
-const MAPS=(route)=>`<div class="lbl m-mapl">${route?"Проложить маршрут":"Посмотреть на карте"}</div><div class="lnks m-maps">${["Apple Карты","Google Maps","Waze"].map(t=>`<button class="btn" data-a="toast" data-t="${t}: ${route?"маршрут до клуба":"место на карте"}">${t}</button>`).join("")}</div>`;
+const MAPS=(route)=>`<div class="lbl m-mapl">${route?"Проложить маршрут":"Посмотреть на карте"}</div><div class="lnks m-maps">${["Google Maps","Apple Карты","Waze"].map(t=>`<button class="btn" data-a="toast" data-t="${t}: ${route?"маршрут до клуба":"место на карте"}">${t}</button>`).join("")}</div>`;
 const HIST0=[{d:"26 сент",t:"Осенний микст",pl:2,of:12,w:"Karen"},{d:"19 сент",t:"Микст в Арене",pl:1,of:8,w:"Sanja K"},{d:"12 сент",t:"Сентябрьский кубок",pl:5,of:16,w:"Max"}];
 const FMT={americano:"Americano",mexicano:"Mexicano",king:"King of the Court",teams:"Постоянные пары"};
 const dstr=d=>d?`${DOW[d.getDay()]}, ${d.getDate()} ${MON[d.getMonth()]}`:"—";
@@ -332,7 +341,7 @@ scr("T03","Создание · название и дата",[19,20,22],()=>{
 });
 
 scr("T04","Создание · начало, продолжительность, сбор",[21,22,23,24],()=>{
-  const p=plan(),rec=p.min?Math.ceil(p.min/30)*30:null,dur=D.dur||rec||150;
+  const p=plan(),known=(D.mode==="self"&&D.nT)||(D.mode==="link"&&D.cap==="max"),rec=known&&p.min?Math.ceil(p.min/30)*30:null,dur=D.dur||rec||150;
   const hours=[];for(let h=8;h<=23;h++)hours.push(String(h).padStart(2,"0"));
   const [hh,mm]=(D.start||"--:--").split(":");
   return {c:wizHead(4,WIZ().length,"Во сколько?","")+`
@@ -349,22 +358,23 @@ scr("T05","Создание · место проведения",[25,26,27,28,29]
   const q=D.placeQ.trim().toLowerCase(),found=q?PLACES_FOUND.filter(p=>(p.n+p.a).toLowerCase().includes(q)&&!PLACES_SAVED.some(x=>x.a===p.a)):[];
   const list=D.place?"":`<div class="m-sug" style="margin-top:8px"><span class="tag">Ты уже играл здесь</span>${PLACES_SAVED.map((p,i)=>`<button data-a="place" data-src="s" data-i="${i}"><b>${esc(p.n)}</b><small>${esc(p.a)}</small></button>`).join("")}${found.length?`<span class="tag">Найдено на карте</span>${found.map(p=>`<button data-a="place" data-src="f" data-i="${PLACES_FOUND.indexOf(p)}"><b>${esc(p.n)}</b><small>${esc(p.a)}</small></button>`).join("")}`:""}</div>`;
   return {c:wizHead(5,WIZ().length,"Где?","")+`
-   <div class="lbl">Место проведения турнира</div>${D.place?`<div class="m-card"><h4 style="text-transform:none;font-family:var(--f-body);font-weight:700">${esc(D.place.n)}</h4><p>${ic("pin")} ${esc(D.place.a)}</p>${MAPS(false)}<button class="m-exit" data-a="placeclr" style="align-self:flex-start">Изменить место</button></div>`:`<input type="text" id="pq" data-m="placeQ" value="${esc(D.placeQ)}" placeholder="Начни вводить: клуб или адрес">`}
+   <div class="lbl">Место проведения турнира</div>${D.place?`<div class="m-card"><h4 style="text-transform:none;font-family:var(--f-body);font-weight:700">${esc(D.place.n)}</h4><p class="m-addr">${ic("pin")} ${esc(D.place.a)}</p>${MAPS(false)}<button class="m-exit" data-a="placeclr" style="align-self:flex-start">Изменить место</button></div>`:`<input type="text" id="pq" data-m="placeQ" value="${esc(D.placeQ)}" placeholder="Начни вводить: клуб или адрес">`}
    ${list}
    <div class="lbl">Корты <span style="text-transform:none;letter-spacing:0;font-weight:500">(можно дополнить позже)</span></div><input type="text" id="cn" data-m="courtNames" value="${esc(D.courtNames)}" placeholder="Номера или названия через запятую">
    ${N("25–29","запомненные места + поиск по карте; адрес «Улица дом, индекс город». Кнопки карт только показывают место (iPhone: Apple Карты, Google Maps, Waze; Android — без Apple). Клубы — примеры.")}`,b:NAVF(false)};
 });
 
-scr("T06","Создание · формат и корты",[16,17,39],()=>{
-  const p=plan();
-  const nCtl=D.mode==="self"?`<div class="lbl">Сколько бойцов <span class="m-lo">(можно поменять позже)</span></div><div class="m-step"><button data-a="nm">−</button><b>${D.n||"—"}</b><button data-a="np">+</button></div>`
-    :`<p class="hint" style="margin-top:10px">Бойцов — сколько запишется${D.cap==="max"?` (не больше ${D.capN})`:""}. Расчёт ниже — для примера на 12 бойцов.</p>`;
+function t06calc(){const p=plan();
   const durW=D.dur&&p.min>D.dur?`<div class="m-softbox"><p class="m-soft" style="margin:0">Похоже, времени забронировано меньше, чем обычно нужно на ${p.rounds} раундов (около ${hm(p.min)}).${D.courts<p.need?" Ещё корт ускорит турнир.":""}</p><button class="btn sm" data-a="totime">Изменить время</button></div>`:"";
-  const calc=p.rounds?`<div class="m-card" style="margin-top:10px"><dl class="m-kv"><dt>Играем на кортах</dt><dd>${p.used} из ${D.courts}</dd><dt>Раундов</dt><dd><b style="color:var(--m2)">${p.rounds}</b></dd><dt>Каждый раунд отдыхают</dt><dd>${p.rest?p.rest+" бойца":"никто"}</dd><dt>Займёт примерно</dt><dd>${hm(p.min)}</dd></dl></div>${durW}<p class="hint m-15">Система считает примерно 15 минут на раунд.</p>`:"";
+  return p.rounds?`<div class="m-card" style="margin-top:10px"><dl class="m-kv"><dt>Играем на кортах</dt><dd>${p.used} из ${D.courts}</dd><dt>Раундов</dt><dd><b style="color:var(--m2)">${p.rounds}</b></dd><dt>Каждый раунд отдыхают</dt><dd>${p.rest?p.rest+" бойца":"никто"}</dd><dt>Займёт примерно</dt><dd>${hm(p.min)}</dd></dl></div>${durW}<p class="hint m-15">Система считает примерно 15 минут на раунд.</p>`:"";}
+scr("T06","Создание · формат и корты",[16,17,39],()=>{
+  const nCtl=D.mode==="self"?`<div class="lbl">Сколько бойцов <span class="m-lo">(можно поменять позже)</span></div><div class="m-step"><button data-a="nm">−</button><b>${D.n||"—"}</b><button data-a="np">+</button></div>`
+    :D.cap==="max"?`<p class="hint" style="margin-top:10px">Запишутся по ссылке, не больше ${D.capN}. Расчёт — на ${D.capN} бойцов.</p>`
+    :`<div class="lbl">Для расчёта <span class="m-lo">· <b id="calcv" style="color:var(--m2)">${D.calcN}</b> бойцов (на запись не влияет)</span></div><input type="range" class="m-range" min="4" max="32" step="4" value="${D.calcN}" data-r="calcN" aria-label="Бойцов для расчёта">`;
   return {c:wizHead(6,WIZ().length,"Формат","")+`
    <div class="m-fmt">${[["americano","Americano"],["mexicano","Mexicano"],["king","King of the Court"],["teams","Постоянные пары"]].map(([k,t])=>`<button class="${D.format===k?"on":""}" data-set="format" data-v="${k}">${t}</button>`).join("")}</div>
-   ${nCtl}<div class="lbl">Забронировано кортов</div><div class="m-step"><button data-a="cm">−</button><b>${D.courts}</b><button data-a="cp">+</button></div>${calc}
-   ${N("16, 17, 39","бойцы — отсчёт с 4, корты — с 1, без автоматики. Кортов меньше нужного — часть отдыхает. Americano: 12 бойцов на 3 кортах = 11 раундов.")}`,b:NAVF(false)};
+   ${nCtl}<div class="lbl">Забронировано кортов</div><div class="m-step"><button data-a="cm">−</button><b>${D.courts}</b><button data-a="cp">+</button></div><div id="calcbox">${t06calc()}</div>
+   ${N("16, 17, 39","бойцы — отсчёт с 4, корты — с 1, без автоматики. «По ссылке» без лимита — ползунок для расчёта (шаг 4). Americano: раундов = бойцов − 1, если кортов хватает.")}`,b:NAVF(false)};
 });
 
 scr("T07","Создание · имена бойцов",[30,31,32,33,35],()=>{
@@ -378,7 +388,7 @@ scr("T07","Создание · имена бойцов",[30,31,32,33,35],()=>{
 });
 
 scr("T08","Создание · проверка",[36],()=>{const p=plan();return {c:wizHead(WIZ().length,WIZ().length,"Проверь и создай","")+`
- <div class="m-card"><h4>${esc(D.title||"Без названия")}</h4><dl class="m-kv"><dt>Когда</dt><dd>${dstr(D.date)} · ${D.start||"—"}</dd><dt>Продолжительность</dt><dd>${hm(D.dur||Math.ceil((p.min||150)/30)*30)}</dd><dt>Сбор</dt><dd>${D.gather?`за ${D.gather} мин`:"не нужен"}</dd><dt>Место</dt><dd>${esc(D.place?D.place.n:"укажешь позже")}</dd><dt>Формат</dt><dd>${FMT[D.format]} · ${D.courts} ${plC(D.courts)}</dd><dt>Бойцы</dt><dd>${D.mode==="link"?"по ссылке, сами":D.players.length+", вписаны тобой"}</dd>${D.mode!=="link"&&D.players.some(x=>x.g==="f")&&D.players.some(x=>x.g==="m")?`<dt>Пары</dt><dd>${{mix:"М + Ж",same:"М+М · Ж+Ж",any:"любые"}[D.pairs]}</dd>`:""}<dt>Ты</dt><dd>${D.role==="play"?"организуешь и играешь":"только организуешь"}</dd></dl></div>
+ <div class="m-card"><h4>${esc(D.title||"Без названия")}</h4><dl class="m-kv"><dt>Когда</dt><dd>${dstr(D.date)} · ${D.start||"—"}</dd><dt>Продолжительность</dt><dd>${hm(D.dur||Math.ceil((p.min||150)/30)*30)}</dd><dt>Сбор</dt><dd>${D.gather?`за ${D.gather} мин`:"не нужен"}</dd><dt>Место</dt><dd>${esc(D.place?D.place.n:"укажешь позже")}</dd><dt>Формат</dt><dd>${FMT[D.format]} · ${D.courts} ${plC(D.courts)}</dd><dt>Бойцы</dt><dd>${D.mode==="link"?(D.cap==="max"?`по ссылке, не больше ${D.capN}`:"запишутся по ссылке"):D.players.length+", вписаны тобой"}</dd>${D.mode!=="link"&&D.players.some(x=>x.g==="f")&&D.players.some(x=>x.g==="m")?`<dt>Пары</dt><dd>${{mix:"М + Ж",same:"М+М · Ж+Ж",any:"любые"}[D.pairs]}</dd>`:""}<dt>Ты</dt><dd>${D.role==="play"?"организуешь и играешь":"только организуешь"}</dd></dl></div>
  ${N(36,"до этой кнопки турнира нет — только черновик у тебя на главной. «В БОЙ» откроется, когда наступит время турнира.")}`,
  b:foot(`<button class="btn ghost" data-a="back">← Назад</button>`,`<button class="btn pri big" data-a="createT">Создать турнир</button>`)};});
 
@@ -389,7 +399,7 @@ const plist=()=>D.mode==="link"?(D.role==="org"?FRIENDS.slice(0,9):["Sanja K",..
 
 const CONF=()=>{const l=plist();if(D.mode==="link")return l.map((n,i)=>({n,ok:true,t:i}));return l.map((n,i)=>({n,ok:i===0||i%3===1,t:i}));};
 const confRows=()=>CONF().filter(x=>x.ok).sort((a,b)=>b.t-a.t).map(x=>`<div class="m-plrow"><span class="m-dot">${esc(x.n[0])}</span><span class="nm">${esc(x.n)}</span><span class="m-pill">✓ ${D.mode==="link"?"записался":"подтвердил"}</span></div>`).join("");
-const QRBLOCK=()=>`<div class="m-card m-qrcard"><div class="m-qrgrp"><button class="m-qrwrap" data-a="qr" aria-label="Показать QR крупно"><svg class="m-qr m-qrbig" viewBox="0 0 21 21">${qr()}</svg></button><div class="m-qrcol"><b>Ссылка для бойцов</b><span class="hint m-link">padelrex.ee/t/K7Q2M9XP4A</span><button class="btn pri sm" data-a="toast" data-t="Откроется меню «Поделиться» телефона">${SHAREI}Поделиться</button><button class="btn sm" data-a="toast" data-t="Ссылка скопирована">${COPYI}Копировать</button></div></div></div>`;
+const QRBLOCK=()=>`<div class="m-card m-qrcard"><button class="m-collhead" data-a="qrtoggle" aria-expanded="${D.qrOpen}"><span class="lbl" style="margin:0">Ссылка для бойцов</span><span class="m-tri ${D.qrOpen?"up":""}">▾</span></button>${D.qrOpen?`<div class="m-qrgrp"><button class="m-qrwrap" data-a="qr" aria-label="Показать QR крупно"><svg class="m-qr m-qrbig" viewBox="0 0 21 21">${qr()}</svg></button><div class="m-qrcol"><span class="m-link m-val">padelrex.ee/t/K7Q2M9XP4A</span><div class="m-qrbtns"><button class="btn pri sm" data-a="toast" data-t="Откроется меню «Поделиться» телефона">${SHAREI}Поделиться</button><button class="btn sm" data-a="toast" data-t="Ссылка скопирована">${COPYI}Копировать</button></div></div></div>`:""}</div>`;
 scr("U01","Турнир до начала (организатор)",[11,37,10],()=>{
   const s=startDate(),list=plist();
   return {c:`<h1>${esc(D.title||"Турнир")}</h1><p class="hint m-sub2">${dstr(s)} · ${D.start}${D.gather?` · сбор в ${gatherTime()}`:""}<br>${esc(D.place?D.place.n:"место позже")}</p>
@@ -403,8 +413,8 @@ scr("U01","Турнир до начала (организатор)",[11,37,10],(
 
 const J=()=>LASTT||{title:"Пятничный замес",when:"пн, 12 октября · 11:00",gather:"10:30",place:"Padel Arena (пример)",addr:"Sõpruse pst 1, 10615 Tallinn",fmt:"Americano · 3 корта",cap:12,by:"Sanja K"};
 scr("J01","Приглашение по ссылке (игрок)",[37,38],()=>{const left=D.joinState==="cancelled";const j=J();return {c:`<p class="hint">${left?"Ты отменил запись. Место свободно — можно записаться снова.":esc(j.by)+" зовёт тебя на турнир"}</p><h1>${esc(j.title)}</h1>
- <div class="m-card"><dl class="m-kv"><dt>Когда</dt><dd>${esc(j.when)}</dd>${j.gather?`<dt>Сбор</dt><dd>в ${j.gather}</dd>`:""}<dt>Где</dt><dd>${esc(j.place)}</dd><dt>Формат</dt><dd>${esc(j.fmt)}</dd><dt>Записались</dt><dd>9 из ${j.cap}</dd></dl></div>
- ${J().addr?`<div class="m-card" style="margin-top:10px"><p>${ic("pin")} ${esc(J().addr)}</p>${MAPS(false)}</div>`:""}
+ <div class="m-card"><dl class="m-kv"><dt>Когда</dt><dd>${esc(j.when)}</dd>${j.gather?`<dt>Сбор</dt><dd>в ${j.gather}</dd>`:""}<dt>Где</dt><dd>${esc(j.place)}</dd><dt>Формат</dt><dd>${esc(j.fmt)}</dd><dt>Записались</dt><dd>9${j.cap?" из "+j.cap:""}</dd></dl></div>
+ ${J().addr?`<div class="m-card" style="margin-top:10px"><p class="m-addr">${ic("pin")} ${esc(J().addr)}</p>${MAPS(false)}</div>`:""}
  ${N(37,"если не вошёл — «Записаться» откроет вход/регистрацию и вернёт сюда же.")}`,
  b:foot(`<button class="btn ghost" data-a="toast" data-t="Откроется турнир только для просмотра">Смотреть</button>`,`<button class="btn pri big" data-go="J02">Записаться</button>`)};});
 scr("J02","Подтверждение записи (игрок)",[35],()=>({c:`<h1>Запись на турнир</h1><p class="hint">${esc(J().title)} · ${esc(J().when)}</p>
@@ -412,9 +422,9 @@ scr("J02","Подтверждение записи (игрок)",[35],()=>({c:`<
  <button type="button" class="check ${D.joinOk?"on":""}" data-a="joinok" style="margin-top:12px;text-align:left"><i>✓</i>Подтверждаю: организаторы не несут ответственности за травмы, которые я нанесу другим бойцам. Fatality — на моей совести.</button>
  ${N(35,"галочку ставит сам игрок за себя — при записи по ссылке. Организатор за других её не ставит.")}`,
  b:foot(`<button class="btn ghost" data-a="back">← Назад</button>`,`<button class="btn pri big" data-a="join" ${D.joinOk?"":"disabled"}>Записаться</button>`)}));
-scr("J03","Ты записан (игрок)",[38],()=>({c:`<h1>Ты в списке ✓</h1><p class="hint">${esc(J().title)} · ${esc(J().when)} · записались 10 из ${J().cap}</p>
+scr("J03","Ты записан (игрок)",[38],()=>({c:`<h1>Ты в списке ✓</h1><p class="hint">${esc(J().title)} · ${esc(J().when)} · записались 10${J().cap?" из "+J().cap:""}</p>
  <div class="m-card"><p>Напомним за день и за 2 часа до начала.</p></div>
- ${J().addr?`<div class="m-card" style="margin-top:10px"><p>${ic("pin")} ${esc(J().place)} · ${esc(J().addr)}</p>${MAPS(D.timeReached)}<button class="m-exit" data-a="ffj" style="color:#7fb2ff;align-self:flex-start">⏩ макет: за 12 ч до начала</button></div>`:""}
+ ${J().addr?`<div class="m-card" style="margin-top:10px"><p class="m-addr">${ic("pin")} ${esc(J().place)} · ${esc(J().addr)}</p>${MAPS(D.timeReached)}<button class="m-exit" data-a="ffj" style="color:#7fb2ff;align-self:flex-start">⏩ макет: за 12 ч до начала</button></div>`:""}
  ${N(38,"передумал — «Отменить запись». Место сразу освобождается, организатор видит, кто отменил.")}`,
  b:`<div class="foot" style="flex-direction:column"><button class="btn pri big" data-a="tohome">На главную</button><button class="btn" data-a="sheetCancel">Отменить запись</button></div>`}));
 
@@ -453,7 +463,7 @@ scr("P02","Просмотр аватарки",[5],()=>({c:`<h1>${esc(D.me.name)}
  b:foot(`<button class="btn ghost" data-a="tohome">← Назад</button>`,`<button class="btn" data-a="toast" data-t="Откроется конструктор аватарки">✨ Новая аватарка</button>`)}));
 
 /* ---------- окна (как в v3: .confirm > .box.sheet) ---------- */
-const wrap=(h,inner)=>`<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h1 style="font-size:20px;margin:0">${h}</h1><button class="btn sm ghost" data-a="shclose" aria-label="Закрыть">✕</button></div>${inner}</div></div>`;
+const wrap=(h,inner)=>`<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h1 style="font-size:20px;margin:0">${h}</h1><button class="btn sm m-x" data-a="shclose" aria-label="Закрыть">✕</button></div>${inner}</div></div>`;
 function sheetReg(){return wrap("Регистрация",`<div class="au"><div class="lbl">Имя</div><input type="text" id="rn" data-m="regName" value="${esc(D.regName)}" placeholder="Как тебя звать на корте"><div class="lbl">Email</div><input type="email" id="re" data-m="regEmail" value="${esc(D.regEmail)}" placeholder="name@mail.com"><div class="lbl">Пароль · от 6 символов</div><div class="pw"><input type="${D.showPass?"text":"password"}" id="rp" data-m="regPass" value="${esc(D.regPass)}"><button type="button" data-a="eye" tabindex="-1">${D.showPass?"скрыть":"показать"}</button></div>
  <button type="button" class="check ${D.remember?"on":""}" data-a="remember" style="margin-top:0"><i>✓</i>Запомнить меня</button>
  <p class="m-err" id="rerr"></p>
@@ -469,12 +479,12 @@ function sheetProfile(){return wrap("Профиль",`<div class="au"><div class
 function sheetLogout(){return wrap("Выйти из аккаунта?",`<div class="au"><p class="hint">На этом устройстве нужно будет войти заново. Турниры и профиль сохранятся.</p><button class="btn" data-a="shclose">Остаться</button><button class="btn" data-a="logout" style="color:#ff8a8a;border-color:#d4141c">Выйти из аккаунта</button></div>`);}
 function sheetDraft(){return wrap("Сохранить черновик?",`<div class="au"><p class="hint">Турнир ещё не создан. Черновик видишь только ты — продолжишь с того же шага.</p><button class="btn pri big" data-a="drsave">Сохранить черновик</button><button class="btn" data-a="shclose">Продолжить сейчас</button><button class="btn ghost" data-a="drdel2" style="color:#ff8a8a">Удалить</button></div>`);}
 function sheetCancel(){return wrap("Отменить запись?",`<div class="au"><p class="hint">Место освободится, и записаться сможет другой. Организатор увидит, что ты отменил.</p><button class="btn" data-a="shclose">Не отменять</button><button class="btn" data-a="cancelJoin" style="color:#ff8a8a;border-color:#d4141c">Отменить запись</button></div>`);}
-function sheetQR(){return `<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;margin-bottom:8px"><div><div class="lbl" style="margin:0">QR и ссылка</div><div style="font-weight:800;font-size:17px">${esc(D.title||J().title)}</div></div><button class="btn sm" data-a="shclose" aria-label="Закрыть">✕</button></div>
+function sheetQR(){return `<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;margin-bottom:8px"><div><div class="lbl" style="margin:0">QR и ссылка</div><div style="font-weight:800;font-size:17px">${esc(D.title||J().title)}</div></div><button class="btn sm m-x" data-a="shclose" aria-label="Закрыть">✕</button></div>
  <div class="m-qrsheet"><svg viewBox="-1 -1 23 23" class="m-qrxl">${qr()}</svg><div class="m-qrtimer"><i id="qrbar"></i></div><p class="hint" style="margin:0">Наведи камеру телефона</p><b class="m-link">padelrex.ee/t/K7Q2M9XP4A</b>
  <div class="m-two"><button class="btn pri" data-a="qrshare">${SHAREI}Поделиться</button><button class="btn" data-a="qrcopy">${COPYI}Копировать</button></div></div></div></div>`;}
 function sheetList(){const c=CONF();const L=[...c.filter(x=>x.ok).sort((a,b)=>b.t-a.t),...c.filter(x=>!x.ok)];return wrap(`Бойцы · ${c.length}`,`<div class="au">${L.map(x=>`<div class="m-plrow"><span class="m-dot">${esc(x.n[0])}</span><span class="nm">${esc(x.n)}</span>${x.ok?`<span class="m-pill">✓ ${D.mode==="link"?"записался":"подтвердил"}</span>`:`<span class="m-pill dim">ждёт входа</span>`}</div>`).join("")}</div>`);}
 function sheetPick(c,side){const k=D.round,m=pairs(k)[c],ids=m[side],v=(D.scores[k+"-"+c]||[null,null])[side];let b="";for(let i=0;i<=24;i++)b+=`<button class="pk ${v===i?"on":""}" data-a="pickv" data-v="${i}" data-c="${c}" data-s="${side}">${i}</button>`;
- return `<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;margin-bottom:10px"><div><div class="lbl" style="margin:0">Корт ${c+1} · Счёт</div><div style="font-weight:800;font-size:17px">${ids.map(id=>esc(PP(id).name)).join(" & ")}</div></div><button class="btn sm" data-a="shclose">✕</button></div><div class="pkg">${b}</div></div></div>`;}
+ return `<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;margin-bottom:10px"><div><div class="lbl" style="margin:0">Корт ${c+1} · Счёт</div><div style="font-weight:800;font-size:17px">${ids.map(id=>esc(PP(id).name)).join(" & ")}</div></div><button class="btn sm m-x" data-a="shclose" aria-label="Закрыть">✕</button></div><div class="pkg">${b}</div></div></div>`;}
 function sheetMore(){return wrap("Ещё",`<div class="au"><div class="lbl">Ввод счёта</div><div class="seg"><button class="${D.scoreMode==="list"?"on":""}" data-a="smode" data-v="list">Выбор из списка</button><button class="${D.scoreMode==="both"?"on":""}" data-a="smode" data-v="both">Список + кнопки − +</button></div><p class="hint">Нажатие на поле счёта всегда открывает выбор цифр 0–24. Вариант по умолчанию выберет владелец.</p></div>`);}
 /* ---------- сценарии ---------- */
 const SCN={
@@ -502,10 +512,10 @@ function render(){const r=SC[CUR].render();$("#top").innerHTML=header();$("#cont
   renderSide();$("#content").scrollTop=0;
   if(CUR==="U01"){const C=$("#content"),rows=[...C.querySelectorAll(".m-confrows .m-plrow")];while(rows.length>1&&C.scrollHeight>C.clientHeight+1)rows.pop().remove();}
   const sl=$("#sl");if(sl)sl.addEventListener("scroll",()=>{const i=Math.round(sl.scrollLeft/sl.clientWidth);document.querySelectorAll("#dots i").forEach((d,j)=>d.classList.toggle("on",i===j));});}
-function go(id,push=true){if(push&&CUR!==id)H.push(CUR);CUR=id;SHEET=null;render();}
+function go(id,push=true){if(push&&CUR!==id)H.push(CUR);if(id==="U01"&&CUR!=="U01")D.qrOpen=false;CUR=id;SHEET=null;render();}
 function sheet(f){SHEET=f;render();}
 function toast(t){const o=$(".mtoast");if(o)o.remove();const el=document.createElement("div");el.className="mtoast";el.textContent=t;$("#dev").appendChild(el);setTimeout(()=>{el.style.opacity="0";setTimeout(()=>el.remove(),300);},1700);}
-function wizNext(){const w=WIZ(),i=w.indexOf(CUR);if(CUR==="T04"&&!D.dur){const p=plan();D.dur=p.min?Math.ceil(p.min/30)*30:150;}if(CUR==="T07"){parse(true);if(D.players.length<(D.n||0)){render();toast(`Нужно ${D.n} бойцов — сейчас ${D.players.length}`);return;}}go(w[i+1]);}
+function wizNext(){const w=WIZ(),i=w.indexOf(CUR);if(CUR==="T04"&&!D.dur){const p=plan(),known=(D.mode==="self"&&D.nT)||(D.mode==="link"&&D.cap==="max");D.dur=known&&p.min?Math.ceil(p.min/30)*30:150;}if(CUR==="T07"){parse(true);if(D.players.length<(D.n||0)){render();toast(`Нужно ${D.n} бойцов — сейчас ${D.players.length}`);return;}}go(w[i+1]);}
 function parse(silent){D.raw.split(/\n/).map(s=>s.trim()).filter(Boolean).forEach(n=>{if(!D.players.some(p=>p.name.toLowerCase()===n.toLowerCase()))D.players.push({name:n,g:"m"});});D.raw="";if(!silent)render();}
 function syncMe(){D.players=D.players.filter(p=>!p.me);if(D.role==="play")D.players.unshift({name:D.me.name,g:"m",me:true});}
 function histAdd(){const t=table();const me=Math.max(0,t.findIndex(r=>r.id===PL[0].id));D.history=[{d:"12 окт",t:D.title||"Пятничный замес",pl:me+1,of:t.length,w:PP(t[0].id).name,live:true},...D.history.filter(h=>!h.live)];}
@@ -515,7 +525,8 @@ function setSc(c,sd,v){const k=D.round+"-"+c,s=(D.scores[k]||[null,null]).slice(
 const dev=$("#dev");
 dev.addEventListener("input",e=>{const t=e.target;
   if(t.dataset.m){D[t.dataset.m]=t.value;if(t.dataset.m==="placeQ"){const pos=t.selectionStart;render();const n=$("#pq");if(n){n.focus();n.setSelectionRange(pos,pos);}}}
-  if(t.dataset.r==="dur"){D.dur=+t.value;$("#durv").textContent=hm(D.dur);}});
+  if(t.dataset.r==="dur"){D.dur=+t.value;$("#durv").textContent=hm(D.dur);}
+  if(t.dataset.r==="calcN"){D.calcN=+t.value;$("#calcv").textContent=D.calcN;$("#calcbox").innerHTML=t06calc();}});
 dev.addEventListener("click",e=>{
   const b=e.target.closest("[data-a],[data-go],[data-set]");if(!b)return;
   if(b.dataset.a==="shade"&&e.target.closest("[data-stop]"))return;
@@ -536,6 +547,7 @@ dev.addEventListener("click",e=>{
    tohome(){H=[];go("H01",false);},
    toast(){toast(b.dataset.t);},
    qr(){sheet(sheetQR);qrArm();},
+   qrtoggle(){D.qrOpen=!D.qrOpen;render();},
    prof(){sheet(sheetProfile);},
    viewav(){go("P02");},
    shclose(){SHEET=null;render();},
@@ -557,12 +569,12 @@ dev.addEventListener("click",e=>{
    place(){D.place=(b.dataset.src==="s"?PLACES_SAVED:PLACES_FOUND)[i];D.placeQ="";render();},
    placeclr(){D.place=null;render();},
    capm(){D.capN=Math.max(4,D.capN-1);render();},capp(){D.capN=Math.min(40,D.capN+1);render();},
-   nm(){D.n=Math.max(4,(D.n||4)-1);render();},np(){D.n=Math.min(40,(D.n||4)+1);render();},
+   nm(){D.nT=true;D.n=Math.max(4,(D.n||4)-1);render();},np(){D.nT=true;D.n=Math.min(40,(D.n||4)+1);render();},
    totime(){go("T04");},ffj(){D.timeReached=true;render();},
    qrshare(){qrArm();toast("Откроется меню «Поделиться» телефона");},qrcopy(){qrArm();toast("Ссылка скопирована");},
    cm(){D.courts=Math.max(1,D.courts-1);render();},cp(){D.courts=Math.min(12,D.courts+1);render();},
    parse(){parse();},g(){D.players[i].g=b.dataset.v;render();},px(){D.players.splice(i,1);render();},
-   createT(){LASTT={title:D.title||"Турнир",when:`${dstr(startDate())} · ${D.start}`,gather:D.gather?gatherTime():"",place:D.place?D.place.n:"место позже",addr:D.place?D.place.a:"",fmt:FMT[D.format]+" · "+D.courts+" "+plC(D.courts),cap:D.mode==="link"&&D.cap==="max"?D.capN:(D.n||12),by:D.me.name};D.created=true;D.draft=null;H=[];go("U01",false);toast("Турнир создан — отправь ссылку бойцам");},
+   createT(){LASTT={title:D.title||"Турнир",when:`${dstr(startDate())} · ${D.start}`,gather:D.gather?gatherTime():"",place:D.place?D.place.n:"место позже",addr:D.place?D.place.a:"",fmt:FMT[D.format]+" · "+D.courts+" "+plC(D.courts),cap:D.mode==="link"?(D.cap==="max"?D.capN:null):(D.n||12),by:D.me.name};D.created=true;D.draft=null;H=[];go("U01",false);toast("Турнир создан — отправь ссылку бойцам");},
    ff(){D.timeReached=true;render();},
    fight(){D.round=1;D.scores={};go("L01");},
    sheetList(){sheet(sheetList);},sheetCancel(){sheet(sheetCancel);},
