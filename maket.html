@@ -54,6 +54,7 @@ body:not(.notes) .device .mnote{display:none}
 .m-chips button{background:linear-gradient(180deg,#121110,#070706);border:1px solid rgba(230,194,90,.45);border-radius:10px;padding:8px 10px;font:600 14px var(--f-body);color:var(--ink);font-variant-numeric:tabular-nums;cursor:pointer}
 .m-chips.tight button{min-width:44px;padding:7px 0;text-align:center}
 .m-addl button{padding:7px 12px;white-space:nowrap;font-size:13px}
+.m-rtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.m-rtabs button{min-width:0;padding:8px 4px;font-size:13px;white-space:nowrap;text-align:center}
 .m-chips button.on{background:linear-gradient(180deg,var(--m1),var(--m2) 60%,var(--m3));color:var(--deep);border-color:var(--m3)}
 .m-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;font-variant-numeric:tabular-nums}
 .m-cal .dw{font:700 10.5px var(--f-body);letter-spacing:.1em;color:var(--mute);padding:2px 0;text-transform:uppercase}
@@ -178,6 +179,8 @@ body:not(.notes) .device .mnote{display:none}
 .m-card .lbl,.m-mapl{color:var(--acc,#e6c25a);opacity:1}
 .m-addr svg{color:var(--acc,#e6c25a);margin-left:-3px}
 .btn.sm.m-x{width:36px;height:36px;min-width:36px;min-height:36px;padding:0;display:grid;place-items:center;flex:none;font-size:14px;line-height:1}
+.m-shh{margin-bottom:12px}#dev .box.sheet{width:calc(100% - 32px);max-width:none}#dev .content{scrollbar-width:none}#dev .content::-webkit-scrollbar{display:none}
+.m-shh{margin-bottom:12px}
 .m-bic{display:inline-block;width:18px;height:18px;vertical-align:-4px;margin-right:6px;color:var(--acc,#e6c25a)}.m-bic svg{width:100%;height:100%}
 .btn .m-bic{color:inherit}.btn.avstart .m-bic{color:var(--acc,#e6c25a)}
 #top .acct{width:40px;height:40px}#top .acct svg{width:24px;height:24px}
@@ -507,7 +510,7 @@ scr("P02","Просмотр аватарки",[5],()=>({c:`<h1>${esc(D.me.name)}
  b:foot(`<button class="btn ghost" data-a="tohome">← Назад</button>`,`<button class="btn" data-a="toast" data-t="Откроется конструктор аватарки">${bi("spark")}Новая аватарка</button>`)}));
 
 /* ---------- окна (как в v3: .confirm > .box.sheet) ---------- */
-const wrap=(h,inner)=>`<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h1 style="font-size:20px;margin:0">${h}</h1><button class="btn sm m-x" data-a="shclose" aria-label="Закрыть">✕</button></div>${inner}</div></div>`;
+const wrap=(h,inner)=>`<div class="confirm" style="place-items:end center;padding:0" data-a="shade"><div class="box sheet" data-stop="1"><div class="row m-shh" style="justify-content:space-between;flex-wrap:nowrap"><h1 style="font-size:20px;margin:0">${h}</h1><button class="btn sm m-x" data-a="shclose" aria-label="Закрыть">✕</button></div>${inner}</div></div>`;
 function sheetReg(){return wrap("Регистрация",`<div class="au"><div class="lbl">Имя</div><input type="text" id="rn" data-m="regName" value="${esc(D.regName)}" placeholder="Как тебя звать на корте"><div class="lbl">Email</div><input type="email" id="re" data-m="regEmail" value="${esc(D.regEmail)}" placeholder="name@mail.com"><div class="lbl">Пол (для миксов)</div><div class="seg m-gseg">${[["m","М"],["f","Ж"]].map(([k,t])=>`<button type="button" class="${D.regG===k?"on":""}" data-a="rg" data-v="${k}">${t}</button>`).join("")}</div><p class="hint" style="margin:0">Видишь только ты и организаторы твоих турниров. Нужен, чтобы в миксах составлять пары.</p><div class="lbl">Пароль · от 6 символов</div><div class="pw"><input type="${D.showPass?"text":"password"}" id="rp" data-m="regPass" value="${esc(D.regPass)}"><button type="button" data-a="eye" tabindex="-1">${D.showPass?"скрыть":"показать"}</button></div>
  <button type="button" class="check ${D.remember?"on":""}" data-a="remember" style="margin-top:0"><i>✓</i>Запомнить меня</button>
  <p class="m-err" id="rerr"></p>
@@ -575,7 +578,7 @@ scr("M01","Деньги (организатор)",[],()=>{const m=D.money,r=mone
   const lines=m.mode==="sum"?`<div class="lbl">Сумма расходов, €</div><input type="number" inputmode="decimal" data-mm="total" value="${m.total}">`
    :`<div class="lbl">Расходы по строкам</div>${m.lines.map((l,i)=>`<div class="m-line"><input type="text" data-ml="k" data-i="${i}" value="${esc(l.k)}"><input type="number" inputmode="decimal" data-ml="v" data-i="${i}" value="${l.v}"><button class="x" data-a="mldel" data-i="${i}" aria-label="Убрать">✕</button></div>`).join("")}
      <div class="m-chips m-addl">${["Корты","Мячи","Вода","Призы","Своё"].map(k=>`<button data-a="mladd" data-v="${k}">＋ ${k}</button>`).join("")}</div>`;
-  const pay=m.payAll?"":`<div class="m-chips tight">${PL.map(p=>`<button class="${m.payers[p.id]?"on":""}" data-a="mpay" data-v="${p.id}">${esc(p.name)}</button>`).join("")}</div>`;
+  const pay=m.payAll?"":`<div class="m-chips m-addl">${PL.map(p=>`<button class="${m.payers[p.id]?"on":""}" data-a="mpay" data-v="${p.id}">${esc(p.name)}</button>`).join("")}</div>`;
   const sum=`<div class="m-card" style="margin-top:10px"><dl class="m-kv"><dt>Расходы</dt><dd>${eur(r.total)}</dd><dt>Платят</dt><dd>${r.n}</dd><dt>Расчёт</dt><dd>${eur(r.calc)}</dd><dt>С каждого</dt><dd>${m.edit?`<input type="number" inputmode="decimal" step="0.5" data-mm="manual" value="${r.per}" style="width:90px;text-align:right">`:`<button class="m-edit" data-a="medit">${eur(r.per)} ✎</button>`}</dd><dt>Будет собрано</dt><dd>${eur(r.coll)}</dd><dt>Разница</dt><dd style="color:${r.diff<0?"#ff8a8a":"var(--m2)"}">${r.diff>=0?"+":"−"}${eur(Math.abs(r.diff))}</dd></dl>${m.manual!=null?`<button class="m-exit" data-a="mauto" style="align-self:flex-start">Вернуть расчёт</button>`:""}</div>`;
   const plist=PL.filter(p=>m.payAll||m.payers[p.id]).map(p=>`<div class="m-plrow"><span class="nm">${esc(p.name)}</span><button class="m-pill ${m.paid[p.id]?"":"dim"}" data-a="mpaid" data-v="${p.id}">${m.paid[p.id]?"✓ Оплачено":"Не оплачено"}</button></div>`).join("");
   return {c:`<h1>Деньги</h1><div class="seg"><button class="${m.mode==="sum"?"on":""}" data-a="mmode" data-v="sum">Одной суммой</button><button class="${m.mode==="lines"?"on":""}" data-a="mmode" data-v="lines">По строкам</button></div>
@@ -594,7 +597,7 @@ const RULES={
  teams:["Пары весь турнир одни, каждая пара играет с каждой по разу.","Раундов = пар − 1 при чётном числе пар (6 пар → 5 раундов). При нечётном — столько раундов, сколько пар, и каждый раунд одна пара отдыхает.","Очки пары складываются. Побеждает пара с наибольшей суммой очков."]};
 let RTAB="all";
 function sheetRules(){const T=[["all","Общее"],["americano","Americano"],["mexicano","Mexicano"],["king","King"],["teams","Пары"]];
-  return wrap("Правила",`<div class="au"><div class="m-chips tight">${T.map(([k,t])=>`<button class="${RTAB===k?"on":""}" data-a="rtab" data-v="${k}">${t}</button>`).join("")}</div>
+  return wrap("Правила",`<div class="au"><div class="m-chips m-rtabs">${T.map(([k,t])=>`<button class="${RTAB===k?"on":""}" data-a="rtab" data-v="${k}">${t}</button>`).join("")}</div>
   ${RTAB!=="all"?`<h4 class="m-rh">${k2f(RTAB)}</h4>`:""}<ol class="m-rules">${RULES[RTAB].map(t=>`<li>${t}</li>`).join("")}</ol></div>`);}
 const k2f=k=>({americano:"Americano",mexicano:"Mexicano",king:"King of the Court",teams:"Постоянные пары"})[k]||"";
 /* ---------- установка на экран (идея 28) ---------- */
