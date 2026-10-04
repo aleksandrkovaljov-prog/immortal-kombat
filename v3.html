@@ -515,7 +515,8 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
 .avc .cropw{position:relative;border-radius:12px;overflow:hidden;touch-action:none;border:1px solid rgba(230,194,90,.28)}.avc .cropw canvas{display:block}
 .avc .ring{position:absolute;border-radius:50%;border:2px solid #e6c25a;box-shadow:0 0 0 2000px rgba(0,0,0,.55);cursor:move;touch-action:none}
 .avstart{margin-top:2px}
-.avc .btn:not(.pri){background:#0b0a08!important;color:#e6c25a!important;border:1px solid rgba(230,194,90,.45)!important;box-shadow:none!important}
+#avc.avc .btn:not(.pri){background:#0b0a08!important;color:#e6c25a!important;border:1px solid rgba(230,194,90,.45)!important;box-shadow:none!important}
+.avc .croptip{margin:4px 0 2px}.avc .zoomrow{margin:6px 0 10px}.avc .prevrow{display:flex;align-items:center;gap:12px;margin:12px 0 14px;color:#b3a274;font-size:13px}.avc .prevrow canvas{width:64px;height:64px;border-radius:50%;border:2px solid #e6c25a;flex:none}
 </style>
 
 <div class="stage"><div class="device" id="dev"><canvas id="fx" aria-hidden="true"></canvas><div class="crest" aria-hidden="true"></div><div class="island"></div>
@@ -1513,17 +1514,17 @@ ru:{t:"Конструктор бойца",sub:"Задай фигуру — по�
 s2:"Шаг 2 · Фигура",hgt:"рост",m:"Мужчина",f:"Женщина",build:"Телосложение",b:["Худой","Стройный","Атлет","Плотный","Крупный"],up:"Верх фигуры",ups:["Меньше","Средне","Больше"],h:"Рост",cm:"см",shp:"Форма фигуры",shw:["шире плечи","ровная","шире бёдра"],arm:"Открытость образа",armh:"сколько тела видно из-под доспеха",arms:["скромно","сдержанно","смело","откровенно"],
 s3:"Шаг 3 · Промпт для Gemini",copy:"Копировать",copied:"Скопировано ✓",cmsg:"Промпт скопирован — вставь его в Gemini.",manual:"Текст выделен — нажми и удерживай, затем «Скопировать».",
 s4:"Шаг 4 · Gemini",s4a:"Нажми <b>«Копировать»</b> у промпта.",s4b:"Открой <b>Gemini</b> (приложение или gemini.google.com), начни <b>новый чат</b>.",s4c:"Прикрепи своё фото из шага 1 и вставь промпт.",s4d:"Если что-то не так (лишняя рука, не то лицо), напиши одной фразой, что поправить, — не начинай заново.",s4e:"Сохрани картинку на телефон.",gem:"Открыть Gemini",
-s5:"Шаг 5 · Загрузить аватарку",s5h:"Загрузи готовую картинку в полный рост — круг для аватарки поставим на голову, подвинь его, если нужно.",up5:"📷 Загрузить картинку",zoom:"Размер круга",save:"Сохранить аватарку",saved:"Аватарка сохранена ✓",err:"Не получилось загрузить картинку.",need:"Войди, чтобы сохранить аватарку.",open:"✨ Создай себе аватарку"},
+s5:"Шаг 5 · Загрузить аватарку",s5h:"Загрузи готовую картинку в полный рост из Gemini.",cropTip:"Круг — только голова: от макушки до подбородка, с небольшим запасом. Плечи не нужны. Двигай круг пальцем, размер меняй ползунком.",prev:"Так будет выглядеть аватарка",up5:"📷 Загрузить картинку",zoom:"Размер круга",save:"Сохранить аватарку",saved:"Аватарка сохранена ✓",err:"Не получилось загрузить картинку.",need:"Войди, чтобы сохранить аватарку.",open:"✨ Создай себе аватарку"},
 en:{t:"Fighter builder",sub:"Set your figure — get a prompt for your avatar in Gemini",s1:"Step 1 · Photo",s1a:"Ask a friend to take a photo of you <b>from 1.5–2 m</b>, waist up. Or take a <b>selfie at arm's length</b>.",s1b:"Your <b>whole head</b> must be in the frame with a little space above. Face fully visible, look at the camera.",s1c:"Even daylight, no glasses or cap, simple background.",
 s2:"Step 2 · Figure",hgt:"height",m:"Man",f:"Woman",build:"Build",b:["Slim","Lean","Athletic","Solid","Big"],up:"Upper body",ups:["Smaller","Average","Bigger"],h:"Height",cm:"cm",shp:"Body shape",shw:["broader shoulders","balanced","wider hips"],arm:"Armor openness",armh:"how much body shows under the armor",arms:["modest","reserved","bold","revealing"],
 s3:"Step 3 · Prompt for Gemini",copy:"Copy",copied:"Copied ✓",cmsg:"Prompt copied — paste it into Gemini.",manual:"Text selected — press and hold, then “Copy”.",
 s4:"Step 4 · Gemini",s4a:"Tap <b>“Copy”</b> next to the prompt.",s4b:"Open <b>Gemini</b> (app or gemini.google.com), start a <b>new chat</b>.",s4c:"Attach your photo from step 1 and paste the prompt.",s4d:"If something is off (extra arm, wrong face), say in one sentence what to fix — don't start over.",s4e:"Save the picture to your phone.",gem:"Open Gemini",
-s5:"Step 5 · Upload your avatar",s5h:"Upload the full-body picture — we put the avatar circle on the head, move it if needed.",up5:"📷 Upload picture",zoom:"Circle size",save:"Save avatar",saved:"Avatar saved ✓",err:"Could not load the picture.",need:"Sign in to save the avatar.",open:"✨ Create your avatar"},
+s5:"Step 5 · Upload your avatar",s5h:"Upload the full-body picture from Gemini.",cropTip:"Circle = head only: from the top of the head to the chin, with a little margin. No shoulders. Drag the circle with your finger, change its size with the slider.",prev:"This is how your avatar will look",up5:"📷 Upload picture",zoom:"Circle size",save:"Save avatar",saved:"Avatar saved ✓",err:"Could not load the picture.",need:"Sign in to save the avatar.",open:"✨ Create your avatar"},
 et:{t:"Võitleja konstruktor",sub:"Määra figuur — saad Gemini jaoks avatari käskluse",s1:"Samm 1 · Foto",s1a:"Palu sõbral pildistada sind <b>1,5–2 m kauguselt</b>, vööni. Või tee <b>selfie väljasirutatud käega</b>.",s1b:"<b>Kogu pea</b> peab kaadris olema, pealael veidi ruumi. Nägu täiesti näha, vaata kaamerasse.",s1c:"Ühtlane päevavalgus, ilma prillide ja mütsita, lihtne taust.",
 s2:"Samm 2 · Figuur",hgt:"pikkus",m:"Mees",f:"Naine",build:"Kehaehitus",b:["Kõhn","Sale","Atleet","Tugev","Suur"],up:"Ülakeha",ups:["Väiksem","Keskmine","Suurem"],h:"Pikkus",cm:"cm",shp:"Kehakuju",shw:["laiemad õlad","tasakaalus","laiemad puusad"],arm:"Turvise avatus",armh:"kui palju keha turvise alt paistab",arms:["tagasihoidlik","vaoshoitud","julge","paljastav"],
 s3:"Samm 3 · Käsklus Geminile",copy:"Kopeeri",copied:"Kopeeritud ✓",cmsg:"Käsklus kopeeritud — kleebi see Geminisse.",manual:"Tekst valitud — vajuta ja hoia, siis „Kopeeri“.",
 s4:"Samm 4 · Gemini",s4a:"Vajuta käskluse juures <b>„Kopeeri“</b>.",s4b:"Ava <b>Gemini</b> (rakendus või gemini.google.com), alusta <b>uut vestlust</b>.",s4c:"Lisa oma foto sammust 1 ja kleebi käsklus.",s4d:"Kui midagi on valesti (lisakäsi, vale nägu), kirjuta ühe lausega, mida parandada — ära alusta otsast.",s4e:"Salvesta pilt telefoni.",gem:"Ava Gemini",
-s5:"Samm 5 · Laadi avatar üles",s5h:"Laadi üles täispikkuses pilt — avatari ring paneme pea peale, liiguta seda vajadusel.",up5:"📷 Laadi pilt üles",zoom:"Ringi suurus",save:"Salvesta avatar",saved:"Avatar salvestatud ✓",err:"Pilti ei õnnestunud laadida.",need:"Logi sisse, et avatar salvestada.",open:"✨ Loo endale avatar"}};
+s5:"Samm 5 · Laadi avatar üles",s5h:"Laadi üles täispikkuses pilt Geminist.",cropTip:"Ring — ainult pea: pealaest lõuani, väikese varuga. Õlgu pole vaja. Liiguta ringi sõrmega, suurust muuda liuguriga.",prev:"Nii näeb avatar välja",up5:"📷 Laadi pilt üles",zoom:"Ringi suurus",save:"Salvesta avatar",saved:"Avatar salvestatud ✓",err:"Pilti ei õnnestunud laadida.",need:"Logi sisse, et avatar salvestada.",open:"✨ Loo endale avatar"}};
 function av_(k){const L=AVT[S.lang]||AVT.en;return L[k]!==undefined?L[k]:AVT.en[k];}
 const AVB=["slim","lean","ath","solid","big"],AVBP={slim:{fat:0,mus:.05},lean:{fat:.15,mus:.35},ath:{fat:.2,mus:.95},solid:{fat:.6,mus:.55},big:{fat:1,mus:.6}};
 let AVS=null;try{AVS=JSON.parse(localStorage.getItem("pfn_avc")||"null");}catch(e){}
@@ -1598,12 +1599,15 @@ function avHTML(){const L=k=>av_(k);
  <div class="steps"><h2>${L("s5")}</h2><p class="tip">${L("s5h")}</p><div id="avcrop"></div><button class="btn" data-av="pick" style="width:100%">${L("up5")}</button><input type="file" id="avfile" accept="image/*" hidden></div>
  </div>`;}
 function avRefresh(full){const ov=document.getElementById("avc");if(!ov)return;
- try{localStorage.setItem("pfn_avc",JSON.stringify(AVS));}catch(e){}
+ avPersist();
  if(full){const st=ov.scrollTop;ov.innerHTML=avHTML();ov.scrollTop=st;avBind();if(AVCROP)avCropDraw();return;}
  ov.querySelector("#avfig").innerHTML=avMain();ov.querySelector("#avhv").textContent=AVS.h;
  ov.querySelector("#ave-h").textContent=AVS.h+" "+av_("cm");ov.querySelector("#ave-s").textContent=avShapeWord(AVS.s);ov.querySelector("#ave-a").textContent=av_("arms")[AVS.ar];
  ov.querySelector("#avprompt").textContent=avPrompt();}
-let AVCROP=null;
+let AVCROP=null,AVSAVE=null;
+function avPersist(){AVS.t=Date.now();try{localStorage.setItem("pfn_avc",JSON.stringify(AVS));}catch(e){}clearTimeout(AVSAVE);AVSAVE=setTimeout(avPush,400);}
+function avPush(){AVSAVE=null;try{if(window.PAUTH&&window.PAUTH.isMember())window.PAUTH.saveProfile({avc:AVS}).catch(()=>{});}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&AVSAVE){clearTimeout(AVSAVE);avPush();}});
 function avCopy(btn){const t=avPrompt(),msg=document.getElementById("avcmsg"),label=av_("copy");
  const ok=()=>{btn.textContent=av_("copied");msg.textContent=av_("cmsg");setTimeout(()=>{btn.textContent=label;msg.textContent="";},2000);};
  const legacy=()=>{try{const ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);const r=document.execCommand("copy");ta.remove();return r;}catch(e){return false;}};
@@ -1612,16 +1616,18 @@ function avCopy(btn){const t=avPrompt(),msg=document.getElementById("avcmsg"),la
  try{if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,fb);else fb();}catch(e){fb();}}
 function avLoad(file){return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const img=new Image();img.onload=()=>res({img,url});img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("img"));};img.src=url;});}
 function avCropDraw(){const box=document.getElementById("avcrop");if(!box||!AVCROP)return;const c=AVCROP;
- box.innerHTML=`<div class="cropw"><canvas id="avcv"></canvas><div class="ring" id="avring"></div></div><label class="rw"><div class="tp"><span>${av_("zoom")}</span></div><input data-avr="zoom" type="range" min="12" max="80" value="${Math.round(c.r*100)}"></label><button class="btn pri big" data-av="save" style="width:100%">${av_("save")}</button>`;
+ box.innerHTML=`<p class="tip croptip">${av_("cropTip")}</p><label class="rw zoomrow"><div class="tp"><span>${av_("zoom")}</span><em id="avzv">${Math.round(c.r*100)}%</em></div><input id="avzoom" type="range" min="12" max="80" value="${Math.round(c.r*100)}"></label><div class="cropw"><canvas id="avcv"></canvas><div class="ring" id="avring"></div></div><div class="prevrow"><canvas id="avprev" width="160" height="160"></canvas><span>${av_("prev")}</span></div><button class="btn pri big" data-av="save" style="width:100%">${av_("save")}</button>`;
  const cv=document.getElementById("avcv"),W=box.clientWidth||300,Hh=Math.round(W*c.img.naturalHeight/c.img.naturalWidth);
  cv.width=W*2;cv.height=Hh*2;cv.style.width=W+"px";cv.style.height=Hh+"px";cv.getContext("2d").drawImage(c.img,0,0,cv.width,cv.height);c.W=W;c.H=Hh;avRing();
+ const zr=document.getElementById("avzoom");zr.addEventListener("input",()=>{c.r=(+zr.value)/100;avRing();});
  const ring=document.getElementById("avring");let drag=null;
  const pos=e=>{const p=e.touches?e.touches[0]:e;const r=cv.getBoundingClientRect();return [(p.clientX-r.left)/W,(p.clientY-r.top)/Hh];};
  const start=e=>{drag=pos(e);drag.push(c.x,c.y);e.preventDefault();};
  const move=e=>{if(!drag)return;const p=pos(e);c.x=Math.min(1,Math.max(0,drag[2]+(p[0]-drag[0])));c.y=Math.min(1,Math.max(0,drag[3]+(p[1]-drag[1])));avRing();e.preventDefault();};
  const end=()=>{drag=null;};
  [ring,cv].forEach(el=>{el.addEventListener("pointerdown",start);});window.addEventListener("pointermove",move);window.addEventListener("pointerup",end);}
-function avRing(){const c=AVCROP,ring=document.getElementById("avring");if(!ring)return;const d=c.r*c.W;ring.style.width=ring.style.height=d+"px";ring.style.left=(c.x*c.W-d/2)+"px";ring.style.top=(c.y*c.H-d/2)+"px";}
+function avPrev(){const c=AVCROP,pv=document.getElementById("avprev");if(!c||!pv)return;const x=pv.getContext("2d"),N=pv.width,iw=c.img.naturalWidth,ih=c.img.naturalHeight,d=c.r*iw;x.fillStyle="#0b0b0a";x.fillRect(0,0,N,N);x.drawImage(c.img,c.x*iw-d/2,c.y*ih-d/2,d,d,0,0,N,N);const zv=document.getElementById("avzv");if(zv)zv.textContent=Math.round(c.r*100)+"%";}
+function avRing(){const c=AVCROP,ring=document.getElementById("avring");if(!ring)return;const d=c.r*c.W;ring.style.width=ring.style.height=d+"px";ring.style.left=(c.x*c.W-d/2)+"px";ring.style.top=(c.y*c.H-d/2)+"px";avPrev();}
 async function avSave(){const c=AVCROP;if(!c)return;if(!(window.PAUTH&&window.PAUTH.isMember())){toast(av_("need"));return;}
  try{const N=256,cv=document.createElement("canvas");cv.width=cv.height=N;const x=cv.getContext("2d");const iw=c.img.naturalWidth,ih=c.img.naturalHeight;
   const d=c.r*iw,sx=c.x*iw-d/2,sy=c.y*ih-d/2;x.fillStyle="#0b0b0a";x.fillRect(0,0,N,N);x.drawImage(c.img,sx,sy,d,d,0,0,N,N);
@@ -1630,10 +1636,10 @@ async function avSave(){const c=AVCROP;if(!c)return;if(!(window.PAUTH&&window.PA
   const body=cb.toDataURL("image/jpeg",.7);
   await window.PAUTH.saveProfile({photo,body});toast(av_("saved"));avClose();render();if(AUTHV)renderLayer();}catch(e){toast(av_("err"));}}
 function avBind(){const ov=document.getElementById("avc");if(!ov)return;
- ov.querySelectorAll("[data-avr]").forEach(el=>el.addEventListener("input",e=>{const k=el.dataset.avr,v=+el.value;if(k==="zoom"){AVCROP.r=v/100;avRing();return;}AVS[k]=v;avRefresh(false);}));
+ ov.querySelectorAll("[data-avr]").forEach(el=>el.addEventListener("input",e=>{const k=el.dataset.avr,v=+el.value;AVS[k]=v;avRefresh(false);}));
  const fi=ov.querySelector("#avfile");fi.addEventListener("change",async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const {img}=await avLoad(f);
   const ar=img.naturalHeight/img.naturalWidth;AVCROP={img,x:.5,y:ar>1.2?.14:.3,r:ar>1.2?.34:.5};avCropDraw();setTimeout(()=>{const b=document.getElementById("avcrop");if(b)b.scrollIntoView({block:"center",behavior:"smooth"});},50);}catch(err){toast(av_("err"));}fi.value="";});}
-function avOpen(){avClose();const dev=document.querySelector(".device")||document.body;const ov=document.createElement("div");ov.id="avc";ov.className="avc";ov.innerHTML=avHTML();dev.appendChild(ov);
+function avOpen(){avClose();try{if(PROF&&PROF.avc&&(PROF.avc.t||0)>(AVS.t||0))AVS=Object.assign({},AVS,PROF.avc);}catch(e){}const dev=document.querySelector(".device")||document.body;const ov=document.createElement("div");ov.id="avc";ov.className="avc";ov.innerHTML=avHTML();dev.appendChild(ov);
  ov.addEventListener("click",e=>{const b=e.target.closest("[data-av]");if(!b)return;const a=b.dataset.av,v=b.dataset.v;
   if(a==="close"){avClose();return;}
   if(a==="sex"){AVS.sex=v;avRefresh(true);return;}
