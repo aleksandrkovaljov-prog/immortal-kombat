@@ -482,6 +482,40 @@ input[type=text],input[type=number],select{background:var(--surf);border:1px sol
 .ioshelp ol{list-style:none;padding:0;margin:0 0 10px;display:grid;gap:12px}.ioshelp li{display:flex;gap:12px;align-items:center;font-size:15.5px;line-height:1.35}.ioshelp .ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:1px solid rgba(230,194,90,.6);color:#c99a2e;font-size:22px;font-weight:700}
 .hero .hl{display:block;width:33%;height:1px;margin:6px auto;background:linear-gradient(90deg,transparent,rgba(230,194,90,.9),transparent)}
 .btn.big{padding-top:5px}
+.avc{position:absolute;inset:0;z-index:75;overflow:auto;-webkit-overflow-scrolling:touch;background:#050403;background-image:radial-gradient(120% 60% at 50% 0%,#1b1408,transparent 60%);color:#f3ead2;font:15px/1.4 var(--f-body)}
+.avc-in{max-width:430px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 40px;display:flex;flex-direction:column;gap:14px}
+.avc .avc-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.avc h1{font:700 21px/1.1 var(--f-disp);letter-spacing:.08em;text-transform:uppercase;color:#e6c25a;margin:0}
+.avc .sub{color:#b3a274;font-size:13px;margin-top:4px}
+.avc .avx{flex:none;width:40px;height:40px;border-radius:12px;border:1px solid rgba(230,194,90,.45);background:#0b0a08;color:#e6c25a;font-size:18px;cursor:pointer}
+.avc .stage{position:relative;background:radial-gradient(60% 55% at 50% 50%,rgba(230,194,90,.14),transparent 70%),#0e0c09;border:1px solid rgba(230,194,90,.28);border-radius:16px;height:220px;overflow:hidden}
+.avc .stage svg{display:block;width:100%;height:100%}
+.avc .hval{position:absolute;right:14px;top:12px;text-align:right;line-height:1}.avc .hval small{display:block;color:#b3a274;font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px}.avc .hval b{font:700 28px var(--f-disp);color:#e6c25a}
+.avc .lbl{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b3a274;margin:0 0 6px}
+.avc .seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(230,194,90,.28);border-radius:12px;overflow:hidden}
+.avc .seg button{background:#0b0a08;color:#e6c25a;border:0;border-left:1px solid rgba(230,194,90,.28);padding:11px 4px;font:700 13px var(--f-body);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.avc .seg button:first-child{border-left:0}.avc .seg3{grid-template-columns:1fr 1fr 1fr}
+.avc .seg button.on{background:linear-gradient(180deg,#fff6d2 0%,#f4d98a 22%,#e6c062 50%,#d2a443 78%,#bf8f30 100%);color:#1a0f05}
+.avc .builds{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.avc .builds button{background:#0e0c09;border:1px solid rgba(230,194,90,.12);border-radius:12px;padding:6px 2px 7px;color:#b3a274;font:700 10px var(--f-body);text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.avc .builds svg{width:100%;height:62px}.avc .builds button.on{border-color:#e6c25a;color:#e6c25a;box-shadow:inset 0 0 0 1px #e6c25a}
+.avc .card{background:#0e0c09;border:1px solid rgba(230,194,90,.28);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.avc .rw{display:flex;flex-direction:column;gap:6px}.avc .tp{display:flex;justify-content:space-between;align-items:baseline}.avc .tp span{font-weight:700;font-size:14px}.avc .tp em{font-style:normal;color:#e6c25a;font-size:13px}
+.avc .hint{color:#b3a274;font-size:12px;margin-top:-4px}.avc .ends{display:flex;justify-content:space-between;color:#b3a274;font-size:11px}
+.avc input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#3a2c10,#e6c25a);outline:none;border:0;padding:0}
+.avc input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#e6c062;border:1px solid #7a5810;box-shadow:0 2px 6px #000}
+.avc .prompt{background:#0b0a08;border:1px solid rgba(230,194,90,.28);border-radius:14px;padding:12px;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#e9dcb5;white-space:pre-wrap;max-height:112px;overflow:auto;user-select:text;-webkit-user-select:text}
+.avc .phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.avc .phead .lbl{margin:0}
+.avc .mini{background:transparent;border:1px solid rgba(230,194,90,.45);color:#e6c25a;border-radius:10px;padding:7px 12px;font:700 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;align-self:flex-start}
+.avc .copied{color:#e6c25a;font-size:12px;min-height:16px;margin-top:6px}
+.avc .steps{background:#0e0c09;border:1px solid rgba(230,194,90,.28);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.avc .steps h2{font:700 13px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:#e6c25a;margin:0}
+.avc .steps ol{padding-left:20px;margin:0;display:flex;flex-direction:column;gap:6px;font-size:14px}.avc .steps li::marker{color:#e6c25a;font-weight:700}
+.avc .tip{color:#b3a274;font-size:13px;margin:0}
+.avc .cropw{position:relative;border-radius:12px;overflow:hidden;touch-action:none;border:1px solid rgba(230,194,90,.28)}.avc .cropw canvas{display:block}
+.avc .ring{position:absolute;border-radius:50%;border:2px solid #e6c25a;box-shadow:0 0 0 2000px rgba(0,0,0,.55);cursor:move;touch-action:none}
+.avstart{margin-top:2px}
+.avc .btn:not(.pri){background:#0b0a08!important;color:#e6c25a!important;border:1px solid rgba(230,194,90,.45)!important;box-shadow:none!important}
 </style>
 
 <div class="stage"><div class="device" id="dev"><canvas id="fx" aria-hidden="true"></canvas><div class="crest" aria-hidden="true"></div><div class="island"></div>
@@ -972,7 +1006,7 @@ function vHome(){const m=AUTHON()&&window.PAUTH.isMember();
   const hist=MY.filter(x=>x.finished||(x.phase!=="play"&&x.date&&x.date<today)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   const pn=(PROF&&(PROF.nick||PROF.name))||((ME()||{}).displayName)||"";
   const prow=`<button class="profrow" data-act="acct"><span class="pav">${PROF&&PROF.photo?`<img src="${esc(PROF.photo)}" alt="">`:USERICON}</span><span class="pt"><b>${esc(pn||at("prof_fill"))}</b><small>${at("prof_open")}</small></span><span class="chev">›</span></button>`;
-  return `<div class="home">${prow}${live.length?`<div class="lbl">${at("live_now")}</div>${live.map(myCard).join("")}`:""}
+  return `<div class="home">${prow}${PROF&&PROF.photo?"":`<button class="btn avstart" data-act="avopen">${av_("open")}</button>`}${live.length?`<div class="lbl">${at("live_now")}</div>${live.map(myCard).join("")}`:""}
   <div class="lbl">${at("upcoming")}</div>${up.length?up.map(myCard).join(""):`<p class="hint">${at("none_up")} ${at("join_hint")}</p>`}
   <button class="btn pri big" data-act="newtour" style="width:100%;margin:6px 0 4px">${at("create")}</button>
   <div class="lbl">${at("history")}</div>${hist.length?hist.map(myCard).join(""):`<p class="hint">${at("none_hist")}</p>`}
@@ -1073,7 +1107,7 @@ function authSheet(){const v=AUTHV,u=ME();let b="";
     <button class="btn pri big" data-act="aureset">${at("reset_btn")}</button><button class="btn" data-act="auhint">${at("show_hint")}</button><button class="lnk" data-act="aumode" data-v="login">← ${at("back")}</button></div>`;}
   else if(v.mode==="profile"&&u){const p=PROF||{};const ver=window.PAUTH.isMember();b=head(at("profile"))+`<div class="au">${msg}
     <div class="row" style="flex-wrap:nowrap;gap:12px"><div class="pav">${p.photo?`<img src="${p.photo}" alt="">`:USERICON}</div><div style="min-width:0"><div style="font-weight:700;word-break:break-all">${esc(u.email||"")}</div><div class="${ver?"ok":"err"}" style="font-size:13px">${ver?"✓ "+at("verified"):at("unverified")}</div>${ver?"":`<button class="lnk" data-act="aumode" data-v="verify">${at("verify_t")}</button>`}</div></div>
-    <button class="btn" data-act="auphoto">📷 ${at("photo")}</button>
+    <button class="btn" data-act="auphoto">📷 ${at("photo")}</button><button class="btn" data-act="avopen">${av_("open")}</button>
     <div class="lbl">${at("name")}</div><input type="text" id="pf_name" value="${esc(p.name||u.displayName||"")}"><div class="lbl">${at("nick")}</div><input type="text" id="pf_nick" value="${esc(p.nick||"")}">
     <button class="btn pri big" data-act="ausave">${at("save")}</button><button class="btn" data-act="auout">${at("out")}</button></div>`;}
   return `<div class="confirm" style="place-items:end center;padding:0" data-act="authclose"><div class="box sheet" data-stop="1">${b}</div></div>`;}
@@ -1353,12 +1387,13 @@ function setScore(c,side,val){
   writeScore(key,v,au);
 }
 function autoNext(){if(S.phase==="play")return;const at=step;setTimeout(()=>{if(step===at&&step<STEPS.length-1){step++;ls.set("pfn_step",String(step));render();$("#content").scrollTop=0;}},320);}
-const VIEW_ACTS=new Set(["mytour","opent","homereg","tab","ovclose","allr","home","intro","pickclose","cno","regclose","copylink","pwainstall","pwaios","thmode","acct","step","gostep","lang"]);
+const VIEW_ACTS=new Set(["mytour","opent","homereg","tab","ovclose","allr","home","intro","pickclose","cno","regclose","copylink","pwainstall","pwaios","avopen","thmode","acct","step","gostep","lang"]);
 function act(a,d,el){
   if(a.startsWith("au")||a==="authclose"){authAct(a,d);return;}
   if(a==="acct"){if(window.PAUTH&&window.PAUTH.isMember()){openAuth("profile");}else{const u=ME();openAuth(u&&!u.isAnonymous?"verify":"login");}return;}
   if(a==="copylink"){copyLink();return;}
   if(a==="pwaios"){iosHelp();return;}
+  if(a==="avopen"){if(AUTHV){AUTHV=null;renderLayer();}avOpen();return;}
   if(a==="pwainstall"){const p=window.PWAPROMPT;if(p){p.prompt();p.userChoice.finally(()=>{window.PWAPROMPT=null;render();});}return;}
   if(a==="thmode"){try{localStorage.setItem("pfn_theme",d.v);}catch(e){}applyTheme();render();return;}
   if(a==="lang"){S.lang=d.v;try{localStorage.setItem("pfn_lang",d.v);}catch(e){}if(window.PAUTH)window.PAUTH.lang(d.v);render();renderLayer();return;}
@@ -1472,6 +1507,143 @@ $("#file").addEventListener("change",async e=>{const f=e.target.files&&e.target.
   try{const src=await processPhoto(f,COLORS[(p.c||0)%COLORS.length],S.stylize);await savePhoto(photoFor,src);render();}catch(err){toast(t("photo_err"));}photoFor=null;});
 
 document.documentElement.style.setProperty("--gri",`url("${IMG_GRI}")`);
+/* ---------------- avatar constructor (overlay) ---------------- */
+const AVT={
+ru:{t:"Конструктор бойца",sub:"Задай фигуру — получишь промпт для аватарки в Gemini",s1:"Шаг 1 · Фото",s1a:"Попроси друга сфотографировать тебя <b>с 1,5–2 метров</b>, по пояс. Или сделай <b>селфи на вытянутой руке</b>.",s1b:"Голова должна <b>целиком</b> попасть в кадр, с небольшим запасом над макушкой. Лицо видно полностью, смотри в камеру.",s1c:"Ровный дневной свет, без очков и кепки, фон попроще.",
+s2:"Шаг 2 · Фигура",hgt:"рост",m:"Мужчина",f:"Женщина",build:"Телосложение",b:["Худой","Стройный","Атлет","Плотный","Крупный"],up:"Верх фигуры",ups:["Меньше","Средне","Больше"],h:"Рост",cm:"см",shp:"Форма фигуры",shw:["шире плечи","ровная","шире бёдра"],arm:"Открытость образа",armh:"сколько тела видно из-под доспеха",arms:["скромно","сдержанно","смело","откровенно"],
+s3:"Шаг 3 · Промпт для Gemini",copy:"Копировать",copied:"Скопировано ✓",cmsg:"Промпт скопирован — вставь его в Gemini.",manual:"Текст выделен — нажми и удерживай, затем «Скопировать».",
+s4:"Шаг 4 · Gemini",s4a:"Нажми <b>«Копировать»</b> у промпта.",s4b:"Открой <b>Gemini</b> (приложение или gemini.google.com), начни <b>новый чат</b>.",s4c:"Прикрепи своё фото из шага 1 и вставь промпт.",s4d:"Если что-то не так (лишняя рука, не то лицо), напиши одной фразой, что поправить, — не начинай заново.",s4e:"Сохрани картинку на телефон.",gem:"Открыть Gemini",
+s5:"Шаг 5 · Загрузить аватарку",s5h:"Загрузи готовую картинку в полный рост — круг для аватарки поставим на голову, подвинь его, если нужно.",up5:"📷 Загрузить картинку",zoom:"Размер круга",save:"Сохранить аватарку",saved:"Аватарка сохранена ✓",err:"Не получилось загрузить картинку.",need:"Войди, чтобы сохранить аватарку.",open:"✨ Создай себе аватарку"},
+en:{t:"Fighter builder",sub:"Set your figure — get a prompt for your avatar in Gemini",s1:"Step 1 · Photo",s1a:"Ask a friend to take a photo of you <b>from 1.5–2 m</b>, waist up. Or take a <b>selfie at arm's length</b>.",s1b:"Your <b>whole head</b> must be in the frame with a little space above. Face fully visible, look at the camera.",s1c:"Even daylight, no glasses or cap, simple background.",
+s2:"Step 2 · Figure",hgt:"height",m:"Man",f:"Woman",build:"Build",b:["Slim","Lean","Athletic","Solid","Big"],up:"Upper body",ups:["Smaller","Average","Bigger"],h:"Height",cm:"cm",shp:"Body shape",shw:["broader shoulders","balanced","wider hips"],arm:"Armor openness",armh:"how much body shows under the armor",arms:["modest","reserved","bold","revealing"],
+s3:"Step 3 · Prompt for Gemini",copy:"Copy",copied:"Copied ✓",cmsg:"Prompt copied — paste it into Gemini.",manual:"Text selected — press and hold, then “Copy”.",
+s4:"Step 4 · Gemini",s4a:"Tap <b>“Copy”</b> next to the prompt.",s4b:"Open <b>Gemini</b> (app or gemini.google.com), start a <b>new chat</b>.",s4c:"Attach your photo from step 1 and paste the prompt.",s4d:"If something is off (extra arm, wrong face), say in one sentence what to fix — don't start over.",s4e:"Save the picture to your phone.",gem:"Open Gemini",
+s5:"Step 5 · Upload your avatar",s5h:"Upload the full-body picture — we put the avatar circle on the head, move it if needed.",up5:"📷 Upload picture",zoom:"Circle size",save:"Save avatar",saved:"Avatar saved ✓",err:"Could not load the picture.",need:"Sign in to save the avatar.",open:"✨ Create your avatar"},
+et:{t:"Võitleja konstruktor",sub:"Määra figuur — saad Gemini jaoks avatari käskluse",s1:"Samm 1 · Foto",s1a:"Palu sõbral pildistada sind <b>1,5–2 m kauguselt</b>, vööni. Või tee <b>selfie väljasirutatud käega</b>.",s1b:"<b>Kogu pea</b> peab kaadris olema, pealael veidi ruumi. Nägu täiesti näha, vaata kaamerasse.",s1c:"Ühtlane päevavalgus, ilma prillide ja mütsita, lihtne taust.",
+s2:"Samm 2 · Figuur",hgt:"pikkus",m:"Mees",f:"Naine",build:"Kehaehitus",b:["Kõhn","Sale","Atleet","Tugev","Suur"],up:"Ülakeha",ups:["Väiksem","Keskmine","Suurem"],h:"Pikkus",cm:"cm",shp:"Kehakuju",shw:["laiemad õlad","tasakaalus","laiemad puusad"],arm:"Turvise avatus",armh:"kui palju keha turvise alt paistab",arms:["tagasihoidlik","vaoshoitud","julge","paljastav"],
+s3:"Samm 3 · Käsklus Geminile",copy:"Kopeeri",copied:"Kopeeritud ✓",cmsg:"Käsklus kopeeritud — kleebi see Geminisse.",manual:"Tekst valitud — vajuta ja hoia, siis „Kopeeri“.",
+s4:"Samm 4 · Gemini",s4a:"Vajuta käskluse juures <b>„Kopeeri“</b>.",s4b:"Ava <b>Gemini</b> (rakendus või gemini.google.com), alusta <b>uut vestlust</b>.",s4c:"Lisa oma foto sammust 1 ja kleebi käsklus.",s4d:"Kui midagi on valesti (lisakäsi, vale nägu), kirjuta ühe lausega, mida parandada — ära alusta otsast.",s4e:"Salvesta pilt telefoni.",gem:"Ava Gemini",
+s5:"Samm 5 · Laadi avatar üles",s5h:"Laadi üles täispikkuses pilt — avatari ring paneme pea peale, liiguta seda vajadusel.",up5:"📷 Laadi pilt üles",zoom:"Ringi suurus",save:"Salvesta avatar",saved:"Avatar salvestatud ✓",err:"Pilti ei õnnestunud laadida.",need:"Logi sisse, et avatar salvestada.",open:"✨ Loo endale avatar"}};
+function av_(k){const L=AVT[S.lang]||AVT.en;return L[k]!==undefined?L[k]:AVT.en[k];}
+const AVB=["slim","lean","ath","solid","big"],AVBP={slim:{fat:0,mus:.05},lean:{fat:.15,mus:.35},ath:{fat:.2,mus:.95},solid:{fat:.6,mus:.55},big:{fat:1,mus:.6}};
+let AVS=null;try{AVS=JSON.parse(localStorage.getItem("pfn_avc")||"null");}catch(e){}
+if(!AVS)AVS={sex:"m",build:"ath",h:180,s:0,up:0,ar:1};
+function avSmooth(P){let d="";const n=P.length;for(let i=0;i<n;i++){const p0=P[(i-1+n)%n],p1=P[i],p2=P[(i+1)%n],p3=P[(i+2)%n];
+ if(i===0)d+=`M${p1[0].toFixed(1)},${p1[1].toFixed(1)}`;
+ const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+ d+=`C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;}return d+"Z";}
+function avShape(sex,build,s,up){up=up||0;
+ const {fat,mus}=AVBP[build],f=sex==="f",V=Math.max(0,-s),P=Math.max(0,s);
+ const SH=(f?.84:1)*(1+.18*mus+.1*fat+.12*V-.05*P), CH=(f?.9:1)*(1+.12*mus+.22*fat+.05*V),
+       WA=(f?.82:1)*(1+.03*mus+.62*fat), HP=(f?1.08:1)*(1+.26*fat+.16*P-.04*V),
+       LG=1+.08*mus+.22*fat+(f?.06:0), NK=(f?.82:1)*(1+.25*mus+.2*fat);
+ const head=[[0,0],[.24,.04],[.35,.19],[.385,.44],[.35,.66],[.27,.84],[.15,.95]];
+ const neck=[[.19*NK,1.02],[.21*NK,1.16]];
+ const trap=[[.46*SH,1.29],[.8*SH,1.42],[.88*SH,1.62]];
+ const bust=f?[[(.8+.03*up)*CH,1.98],[(.86+.13*up)*CH,2.2+.05*up],[(.7+.04*up)*CH,2.42+.05*up]]:[[(.84+.03*up)*CH,1.95],[(.82+.05*up)*CH,2.25],[.74*CH,2.6]];
+ const torso=[[.6*WA,2.95],[.66*HP,3.3],[.74*HP,3.62],[.74*HP,3.85]];
+ const lc=.33*(f?1.03:1);
+ const leg=[[lc+.39*LG*(f?1.05:1),4.3],[lc+.29*LG,4.9],[lc+.17*LG,5.45],[lc+.21*LG,5.9],[lc+.15*LG,6.6],[lc+.09,7.2],[lc+.17,7.55],[lc+.16,7.75],[lc-.1,7.75],[lc-.09,7.3],[lc-.12*LG,6.25],[lc-.14*LG,5.5],[lc-.21*LG,4.6],[.05,4.06]];
+ const R=head.concat(neck,trap,bust,torso,leg);
+ const body=R.concat(R.slice(1).reverse().map(p=>[-p[0],p[1]]));
+ const dx0=.88*SH-.88, dx1=.74*HP-.74, A=(1+.3*mus+.35*fat)*(f?.84:1);
+ const AR=[[.95,1.38,0],[1.12,1.55,0],[1.17,1.85,.05],[1.15,2.3,.3],[1.13,2.85,.55],[1.15,3.2,.7],[1.1,3.85,.95],[1.13,4.1,1],[1.1,4.5,1],[1.02,4.66,1],[.95,4.55,1],[.92,4.15,1],[.94,3.86,.95],[.93,3.25,.7],[.95,2.85,.55],[.9,2.35,.3],[.84,2.05,.1],[.78,1.6,0]];
+ const arm=AR.map(([x,y,t])=>[1.03+(x-1.03)*A+dx0+(dx1-dx0)*t,y]);
+ const lines=[f?(()=>{const r=.2+.07*up,y=2.3+.06*up,c=.2+.06*up;return `M${-(.04+2*r)},${y-.02} Q${-(.04+r)},${y+c} -.04,${y-.02} M${.04+2*r},${y-.02} Q${.04+r},${y+c} .04,${y-.02}`;})():(()=>{const d=.37+.06*up,y=2.2+.04*up;return `M-.72,2.05 Q${-d},${y+.22} -.02,${y} M.72,2.05 Q${d},${y+.22} .02,${y} M0,${y+.05} L0,3.1`;})(),
+  `M0,3.18 m-.02,0 a.02,.02 0 1,0 .04,0 a.02,.02 0 1,0 -.04,0`,`M${-(lc+.03)},5.35 q.06,.08 .12,0 M${lc-.09},5.35 q.06,.08 .12,0`];
+ return {body,arms:[arm,arm.map(p=>[-p[0],p[1]])],hand:[1.02+dx1,4.58],lines,mus,f};}
+function avFig(sex,build,s,hcm,W,ground,pxPerCm,opt,up){
+ const H=hcm*pxPerCm,u=H/7.75,cx=W/2,top=ground-H,sh=avShape(sex,build,s,up);const T=p=>[cx+p[0]*u,top+p[1]*u];const id="av"+opt.id;
+ let g=`<defs><linearGradient id="gg${id}" gradientUnits="userSpaceOnUse" x1="${cx-1.3*u}" y1="0" x2="${cx+1.3*u}" y2="0"><stop offset="0" stop-color="#fff3cf"/><stop offset=".38" stop-color="#f0cf72"/><stop offset=".7" stop-color="#c9952f"/><stop offset="1" stop-color="#6e4a10"/></linearGradient><linearGradient id="gv${id}" gradientUnits="userSpaceOnUse" x1="0" y1="${top}" x2="0" y2="${ground}"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>`;
+ if(opt.racket){const [x,y]=T(sh.hand);g+=`<g transform="translate(${x},${y-3}) rotate(6)"><rect x="-2.2" y="0" width="4.4" height="${u*.6}" rx="2" fill="#4a3412"/><ellipse cx="0" cy="${u*1.12}" rx="${u*.36}" ry="${u*.48}" fill="rgba(230,194,90,.10)" stroke="#d9b154" stroke-width="2.5"/></g>`;}
+ const arms=sh.arms.map(a=>avSmooth(a.map(T))),body=avSmooth(sh.body.map(T));
+ g+=`<path d="${body}" fill="url(#gg${id})"/><path d="${body}" fill="url(#gv${id})"/>`;
+ g+=arms.map(d=>`<path d="${d}" fill="url(#gg${id})" stroke="#6e4a10" stroke-opacity=".45" stroke-width="${opt.detail?0.9:0.4}"/><path d="${d}" fill="url(#gv${id})"/>`).join("");
+ if(opt.detail)g+=`<g transform="translate(${cx},${top}) scale(${u})" fill="none" stroke="#6e4a10" stroke-opacity="${.25+.3*sh.mus}" stroke-width="${1.2/u}" stroke-linecap="round">${sh.lines.map(d=>`<path d="${d}"/>`).join("")}</g>`;
+ return g;}
+function avPrompt(){const S2=AVS;
+ const B={slim:"slim, thin",lean:"lean, fit",ath:"athletic, muscular",solid:"solid, stocky",big:"big, heavy-set"}[S2.build];
+ const UP=S2.sex==="f"?["a small bust","an average bust","a full bust"][S2.up+1]:["a lean chest","an average chest","a big, broad chest"][S2.up+1];
+ const ARM=["full armor covering the whole body","form-fitting armor, forearms bare","light armor: bare arms and shoulders, fitted chest piece","minimal athletic armor like a fantasy sports outfit: bare arms, shoulders and midriff, fitted chest plate"][S2.ar];
+ const sh=S2.s<-35?", noticeably broad shoulders (V-shaped torso)":S2.s>35?", wider hips than shoulders":", balanced shoulders and hips";
+ return `Create a full-body fighter character of the ${S2.sex==="f"?"woman":"man"} in the attached photo. Keep the face clearly recognizable.
+Body: ${B} build${sh}, ${UP}, height about ${S2.h} cm, natural real proportions.
+Style: dark fantasy tournament hero, black and polished gold, dramatic rim light, cinematic, highly detailed.
+Armor: unique ornate armor with a personal motif, not generic plate; ${ARM}; heroic and tasteful, not sexualized.
+Pose: confident power stance facing the viewer, padel racket (solid perforated, not a tennis racket) in the right hand, head down by the side.
+Framing: vertical 2:3, whole figure from head to boots, head in the upper third.
+Background: dark smoky arena with faint gold sparks.
+Rules: exactly two arms and two legs, five fingers per hand, one racket, no extra limbs, no text, no logos. Highest resolution.`;}
+function avShapeWord(v){const w=av_("shw");return v<-35?w[0]:v>35?w[2]:w[1];}
+function avMain(){const G=318,PX=1.42;let r="";
+ for(let c=0;c<=200;c+=50){const y=G-c*PX;r+=`<line x1="14" x2="22" y1="${y}" y2="${y}" stroke="rgba(230,194,90,.4)"/><text x="25" y="${y+3}" font-size="9" fill="#b3a274" font-family="system-ui">${c}</text>`;}
+ r+=`<line x1="14" x2="14" y1="${G-200*PX}" y2="${G}" stroke="rgba(230,194,90,.25)"/><line x1="40" x2="226" y1="${G-AVS.h*PX}" y2="${G-AVS.h*PX}" stroke="rgba(230,194,90,.45)" stroke-dasharray="3 3"/><ellipse cx="120" cy="${G+2}" rx="46" ry="5" fill="rgba(0,0,0,.6)"/>`;
+ return r+avFig(AVS.sex,AVS.build,AVS.s/100,AVS.h,240,G,PX,{id:"m",racket:true,detail:true},AVS.up);}
+function avTiles(){const n=av_("b");return AVB.map((k,i)=>`<button data-av="build" data-v="${k}" class="${AVS.build===k?"on":""}"><svg viewBox="0 0 60 72">${avFig(AVS.sex,k,0,180,60,69,.36,{id:k})}</svg>${n[i]}</button>`).join("");}
+function avHTML(){const L=k=>av_(k);
+ return `<div class="avc-in"><div class="avc-hd"><div><h1>${L("t")}</h1><div class="sub">${L("sub")}</div></div><button class="avx" data-av="close" aria-label="Close">✕</button></div>
+ <div class="steps"><h2>${L("s1")}</h2><ol><li>${L("s1a")}</li><li>${L("s1b")}</li><li>${L("s1c")}</li></ol></div>
+ <div class="lbl">${L("s2")}</div>
+ <div class="stage"><div class="hval"><small>${L("hgt")}</small><b id="avhv">${AVS.h}</b></div><svg id="avfig" viewBox="0 0 240 330">${avMain()}</svg></div>
+ <div class="seg"><button data-av="sex" data-v="m" class="${AVS.sex==="m"?"on":""}">${L("m")}</button><button data-av="sex" data-v="f" class="${AVS.sex==="f"?"on":""}">${L("f")}</button></div>
+ <div><div class="lbl">${L("build")}</div><div class="builds" id="avbuilds">${avTiles()}</div></div>
+ <div><div class="lbl">${L("up")}</div><div class="seg seg3">${[-1,0,1].map((v,i)=>`<button data-av="up" data-v="${v}" class="${AVS.up===v?"on":""}">${L("ups")[i]}</button>`).join("")}</div></div>
+ <div class="card">
+  <label class="rw"><div class="tp"><span>${L("h")}</span><em id="ave-h">${AVS.h} ${L("cm")}</em></div><input data-avr="h" type="range" min="150" max="210" value="${AVS.h}"></label>
+  <label class="rw"><div class="tp"><span>${L("shp")}</span><em id="ave-s">${avShapeWord(AVS.s)}</em></div><input data-avr="s" type="range" min="-100" max="100" value="${AVS.s}"><div class="ends"><i>${L("shw")[0]}</i><i>${L("shw")[2]}</i></div></label>
+  <label class="rw"><div class="tp"><span>${L("arm")}</span><em id="ave-a">${L("arms")[AVS.ar]}</em></div><div class="hint">${L("armh")}</div><input data-avr="ar" type="range" min="0" max="3" step="1" value="${AVS.ar}"><div class="ends"><i>${L("arms")[0]}</i><i>${L("arms")[3]}</i></div></label>
+ </div>
+ <div><div class="phead"><div class="lbl">${L("s3")}</div><button class="mini" data-av="copy">${L("copy")}</button></div><div class="prompt" id="avprompt">${esc(avPrompt())}</div><div class="copied" id="avcmsg"></div></div>
+ <div class="steps"><h2>${L("s4")}</h2><ol><li>${L("s4a")}</li><li>${L("s4b")}</li><li>${L("s4c")}</li><li>${L("s4d")}</li><li>${L("s4e")}</li></ol><a class="mini gem" href="https://gemini.google.com/app" target="_blank" rel="noopener">${L("gem")} ↗</a></div>
+ <div class="steps"><h2>${L("s5")}</h2><p class="tip">${L("s5h")}</p><div id="avcrop"></div><button class="btn" data-av="pick" style="width:100%">${L("up5")}</button><input type="file" id="avfile" accept="image/*" hidden></div>
+ </div>`;}
+function avRefresh(full){const ov=document.getElementById("avc");if(!ov)return;
+ try{localStorage.setItem("pfn_avc",JSON.stringify(AVS));}catch(e){}
+ if(full){const st=ov.scrollTop;ov.innerHTML=avHTML();ov.scrollTop=st;avBind();if(AVCROP)avCropDraw();return;}
+ ov.querySelector("#avfig").innerHTML=avMain();ov.querySelector("#avhv").textContent=AVS.h;
+ ov.querySelector("#ave-h").textContent=AVS.h+" "+av_("cm");ov.querySelector("#ave-s").textContent=avShapeWord(AVS.s);ov.querySelector("#ave-a").textContent=av_("arms")[AVS.ar];
+ ov.querySelector("#avprompt").textContent=avPrompt();}
+let AVCROP=null;
+function avCopy(btn){const t=avPrompt(),msg=document.getElementById("avcmsg"),label=av_("copy");
+ const ok=()=>{btn.textContent=av_("copied");msg.textContent=av_("cmsg");setTimeout(()=>{btn.textContent=label;msg.textContent="";},2000);};
+ const legacy=()=>{try{const ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);const r=document.execCommand("copy");ta.remove();return r;}catch(e){return false;}};
+ const manual=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("avprompt"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);msg.textContent=av_("manual");};
+ const fb=()=>{legacy()?ok():manual();};
+ try{if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,fb);else fb();}catch(e){fb();}}
+function avLoad(file){return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const img=new Image();img.onload=()=>res({img,url});img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("img"));};img.src=url;});}
+function avCropDraw(){const box=document.getElementById("avcrop");if(!box||!AVCROP)return;const c=AVCROP;
+ box.innerHTML=`<div class="cropw"><canvas id="avcv"></canvas><div class="ring" id="avring"></div></div><label class="rw"><div class="tp"><span>${av_("zoom")}</span></div><input data-avr="zoom" type="range" min="12" max="80" value="${Math.round(c.r*100)}"></label><button class="btn pri big" data-av="save" style="width:100%">${av_("save")}</button>`;
+ const cv=document.getElementById("avcv"),W=box.clientWidth||300,Hh=Math.round(W*c.img.naturalHeight/c.img.naturalWidth);
+ cv.width=W*2;cv.height=Hh*2;cv.style.width=W+"px";cv.style.height=Hh+"px";cv.getContext("2d").drawImage(c.img,0,0,cv.width,cv.height);c.W=W;c.H=Hh;avRing();
+ const ring=document.getElementById("avring");let drag=null;
+ const pos=e=>{const p=e.touches?e.touches[0]:e;const r=cv.getBoundingClientRect();return [(p.clientX-r.left)/W,(p.clientY-r.top)/Hh];};
+ const start=e=>{drag=pos(e);drag.push(c.x,c.y);e.preventDefault();};
+ const move=e=>{if(!drag)return;const p=pos(e);c.x=Math.min(1,Math.max(0,drag[2]+(p[0]-drag[0])));c.y=Math.min(1,Math.max(0,drag[3]+(p[1]-drag[1])));avRing();e.preventDefault();};
+ const end=()=>{drag=null;};
+ [ring,cv].forEach(el=>{el.addEventListener("pointerdown",start);});window.addEventListener("pointermove",move);window.addEventListener("pointerup",end);}
+function avRing(){const c=AVCROP,ring=document.getElementById("avring");if(!ring)return;const d=c.r*c.W;ring.style.width=ring.style.height=d+"px";ring.style.left=(c.x*c.W-d/2)+"px";ring.style.top=(c.y*c.H-d/2)+"px";}
+async function avSave(){const c=AVCROP;if(!c)return;if(!(window.PAUTH&&window.PAUTH.isMember())){toast(av_("need"));return;}
+ try{const N=256,cv=document.createElement("canvas");cv.width=cv.height=N;const x=cv.getContext("2d");const iw=c.img.naturalWidth,ih=c.img.naturalHeight;
+  const d=c.r*iw,sx=c.x*iw-d/2,sy=c.y*ih-d/2;x.fillStyle="#0b0b0a";x.fillRect(0,0,N,N);x.drawImage(c.img,sx,sy,d,d,0,0,N,N);
+  const photo=cv.toDataURL("image/jpeg",.82);
+  const bh=640,bw=Math.round(bh*iw/ih),cb=document.createElement("canvas");cb.width=bw;cb.height=bh;cb.getContext("2d").drawImage(c.img,0,0,bw,bh);
+  const body=cb.toDataURL("image/jpeg",.7);
+  await window.PAUTH.saveProfile({photo,body});toast(av_("saved"));avClose();render();if(AUTHV)renderLayer();}catch(e){toast(av_("err"));}}
+function avBind(){const ov=document.getElementById("avc");if(!ov)return;
+ ov.querySelectorAll("[data-avr]").forEach(el=>el.addEventListener("input",e=>{const k=el.dataset.avr,v=+el.value;if(k==="zoom"){AVCROP.r=v/100;avRing();return;}AVS[k]=v;avRefresh(false);}));
+ const fi=ov.querySelector("#avfile");fi.addEventListener("change",async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const {img}=await avLoad(f);
+  const ar=img.naturalHeight/img.naturalWidth;AVCROP={img,x:.5,y:ar>1.2?.14:.3,r:ar>1.2?.34:.5};avCropDraw();setTimeout(()=>{const b=document.getElementById("avcrop");if(b)b.scrollIntoView({block:"center",behavior:"smooth"});},50);}catch(err){toast(av_("err"));}fi.value="";});}
+function avOpen(){avClose();const dev=document.querySelector(".device")||document.body;const ov=document.createElement("div");ov.id="avc";ov.className="avc";ov.innerHTML=avHTML();dev.appendChild(ov);
+ ov.addEventListener("click",e=>{const b=e.target.closest("[data-av]");if(!b)return;const a=b.dataset.av,v=b.dataset.v;
+  if(a==="close"){avClose();return;}
+  if(a==="sex"){AVS.sex=v;avRefresh(true);return;}
+  if(a==="build"){AVS.build=v;avRefresh(true);return;}
+  if(a==="up"){AVS.up=+v;avRefresh(true);return;}
+  if(a==="copy"){avCopy(b);return;}
+  if(a==="pick"){ov.querySelector("#avfile").click();return;}
+  if(a==="save"){avSave();return;}});
+ avBind();}
+function avClose(){const o=document.getElementById("avc");if(o)o.remove();AVCROP=null;}
 function fitFrame(){const d=document.getElementById("dev");if(!d)return;if(innerWidth>=760&&innerHeight>=700){const f=Math.min(1,(innerHeight-24)/896,(innerWidth-24)/424);d.style.setProperty("--fs",f.toFixed(3));}else d.style.removeProperty("--fs");}
 addEventListener("resize",fitFrame);fitFrame();
 applyTheme();S.lang=localLang()||"en";
